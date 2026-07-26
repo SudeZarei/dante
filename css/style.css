@@ -1,0 +1,1040 @@
+/* ============================================================
+   TOKENS
+   ============================================================ */
+:root {
+  --void: #0b0908;
+  --void-2: #17110d;
+  --void-3: #201812;
+  --ember: #ff5a2b;
+  --ember-dim: #7a2f14;
+  --ember-glow: #ff8a4c;
+  --iron: #3d4046;
+  --iron-light: #5c6067;
+  --bone: #e9e1d1;
+  --bone-dim: #a89f8d;
+  --gold: #d4a24c;
+  --mist: #7c8590;
+  --mist-dim: #4b525a;
+  --mist-blue: #5e6b78;
+
+  --font-display: 'Cinzel', serif;
+  --font-body: 'EB Garamond', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --panel-h: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--void);
+  color: var(--bone);
+  font-family: var(--font-body);
+  overflow: hidden; /* scroll is hijacked by JS, see main.js */
+}
+
+::selection {
+  background: var(--ember-dim);
+  color: var(--bone);
+}
+
+button {
+  font-family: inherit;
+}
+
+/* ============================================================
+   ATMOSPHERE — shared background across all panels
+   ============================================================ */
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgba(255, 90, 43, 0.1), transparent 55%),
+    radial-gradient(ellipse at 50% 110%, rgba(255, 90, 43, 0.14), transparent 60%),
+    linear-gradient(180deg, var(--void-2) 0%, var(--void) 45%, var(--void-2) 100%);
+  pointer-events: none;
+}
+
+.vignette {
+  position: absolute;
+  inset: 0;
+  box-shadow: inset 0 0 22vw rgba(0, 0, 0, 0.85);
+}
+
+.cracks {
+  position: absolute;
+  width: 26vw;
+  max-width: 420px;
+  height: 90vh;
+  top: 5vh;
+  opacity: 0.55;
+}
+.cracks path {
+  fill: none;
+  stroke: var(--ember);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 6px rgba(255, 90, 43, 0.65));
+  animation: crack-pulse 5.5s ease-in-out infinite;
+}
+.cracks--left {
+  left: -4vw;
+}
+.cracks--right {
+  right: -4vw;
+}
+.cracks--right path {
+  animation-delay: 1.8s;
+}
+
+@keyframes crack-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.9;
+  }
+}
+
+.embers {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.ember-particle {
+  position: absolute;
+  bottom: -5%;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--ember-glow);
+  box-shadow: 0 0 6px 1px rgba(255, 138, 76, 0.8);
+  animation-name: ember-rise;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  opacity: 0;
+}
+@keyframes ember-rise {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.9;
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(var(--drift), -105vh);
+    opacity: 0;
+  }
+}
+
+/* ============================================================
+   NAV RAIL
+   ============================================================ */
+.rail {
+  position: fixed;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.rail__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1.5px solid var(--iron-light);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s ease;
+}
+.rail__dot:hover {
+  border-color: var(--ember-glow);
+}
+.rail__dot.is-active {
+  background: var(--ember);
+  border-color: var(--ember);
+  box-shadow: 0 0 10px 2px rgba(255, 90, 43, 0.6);
+}
+
+/* ============================================================
+   SCROLL TRACK / PANELS
+   ============================================================ */
+#scroll-track {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  height: 100vh;
+  transition: transform 720ms cubic-bezier(0.65, 0, 0.35, 1);
+  will-change: transform;
+}
+
+.panel {
+  position: relative;
+  width: 100%;
+  height: var(--panel-h);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 6vh 6vw;
+}
+
+/* ---------- HERO ---------- */
+.eyebrow {
+  font-family: var(--font-mono);
+  letter-spacing: 0.32em;
+  font-size: 0.72rem;
+  color: var(--gold);
+  margin: 0 0 18px;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.6rem, 8vw, 6.2rem);
+  letter-spacing: 0.08em;
+  margin: 0 0 22px;
+  color: var(--bone);
+  text-shadow: 0 0 30px rgba(255, 90, 43, 0.25);
+}
+.hero-desc {
+  max-width: 560px;
+  font-size: 1.15rem;
+  line-height: 1.7;
+  color: var(--bone-dim);
+  font-style: italic;
+}
+.hero-desc code {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 0.8em;
+  color: var(--ember-glow);
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 6vh;
+  left: 50%;
+  transform: translateX(-50%);
+  background: none;
+  border: none;
+  color: var(--bone-dim);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  transition: color 0.3s ease;
+}
+.scroll-hint:hover {
+  color: var(--ember-glow);
+}
+.scroll-hint svg {
+  animation: bob 1.8s ease-in-out infinite;
+}
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+/* ---------- MAP ---------- */
+.panel--map {
+  justify-content: flex-start;
+  padding-top: 5vh;
+}
+.map-header {
+  margin-bottom: 1vh;
+}
+.map-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  letter-spacing: 0.06em;
+  margin: 0;
+}
+.funnel-wrap {
+  position: relative;
+  width: min(90vw, 1000px);
+  flex: 1;
+  height: 100vh;
+}
+#funnel-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.funnel-band {
+  cursor: pointer;
+  transition:
+    filter 0.25s ease,
+    opacity 0.25s ease;
+}
+.funnel-band:hover {
+  filter: brightness(1.35);
+}
+.funnel-band__stroke {
+  pointer-events: none;
+}
+
+.funnel-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.ring-label {
+  position: absolute;
+  pointer-events: auto;
+  cursor: pointer;
+  transform: translateY(-50%);
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  color: var(--bone);
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  transition: color 0.25s ease;
+}
+.ring-label small {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  color: var(--bone-dim);
+}
+.ring-label:hover,
+.ring-label:hover small {
+  color: var(--ember-glow);
+}
+.ring-label.align-left {
+  text-align: right;
+  align-items: flex-end;
+}
+.ring-label.align-right {
+  text-align: left;
+  align-items: flex-start;
+}
+
+/* ---------- CREDITS ---------- */
+.credits-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  letter-spacing: 0.08em;
+  margin: 0 0 34px;
+}
+.credits-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: min(90vw, 480px);
+}
+.credits-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(168, 159, 141, 0.18);
+  font-size: 1rem;
+}
+.credits-list li span:first-child {
+  color: var(--bone-dim);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  align-self: center;
+}
+.credits-list li span:last-child {
+  color: var(--bone);
+}
+.credits-note {
+  margin-top: 26px;
+  font-size: 0.85rem;
+  color: var(--bone-dim);
+  font-style: italic;
+}
+.credits-note code {
+  font-family: var(--font-mono);
+  font-style: normal;
+  color: var(--ember-glow);
+}
+
+/* ============================================================
+   FULLSCREEN VIEWER
+   ============================================================ */
+.viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  visibility: hidden;
+  opacity: 0;
+  transition:
+    opacity 0.45s ease,
+    visibility 0s linear 0.45s;
+  background: #000;
+}
+.viewer.is-open {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.45s ease;
+}
+.viewer__media {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+.viewer__media img,
+.viewer__media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.viewer__media .placeholder {
+  font-family: var(--font-mono);
+  color: var(--bone-dim);
+  font-size: 0.85rem;
+  text-align: center;
+  max-width: 380px;
+  letter-spacing: 0.05em;
+}
+.viewer__scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.85) 0%,
+    rgba(0, 0, 0, 0.1) 42%,
+    rgba(0, 0, 0, 0.35) 100%
+  );
+  pointer-events: none;
+}
+.viewer__close {
+  position: absolute;
+  top: 28px;
+  right: 28px;
+  z-index: 5;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(11, 9, 8, 0.55);
+  border: 1px solid rgba(233, 225, 209, 0.25);
+  color: var(--bone);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+.viewer__close:hover {
+  background: var(--ember-dim);
+  border-color: var(--ember);
+}
+
+.viewer__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  padding: 6vh 7vw;
+  max-width: 760px;
+}
+.viewer__eyebrow {
+  font-family: var(--font-mono);
+  letter-spacing: 0.3em;
+  font-size: 0.7rem;
+  color: var(--gold);
+  margin: 0 0 10px;
+}
+.viewer__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  margin: 0 0 14px;
+  color: var(--bone);
+}
+.viewer__desc {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--bone-dim);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 720px) {
+  .rail {
+    right: 14px;
+  }
+  .cracks {
+    width: 40vw;
+    opacity: 0.35;
+  }
+  .funnel-wrap {
+    width: 94vw;
+    height: 68vh;
+  }
+  .ring-label {
+    font-size: 0.72rem;
+  }
+  .ring-label small {
+    font-size: 0.55rem;
+  }
+  .viewer__panel {
+    padding: 5vh 6vw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ember-particle,
+  .cracks path,
+  .scroll-hint svg {
+    animation: none !important;
+  }
+  #scroll-track {
+    transition: none !important;
+  }
+}
+
+/* ============================================================
+   ATMOSPHERE BOOST — fog, broken ground with lava, grain
+   (additive layer, does not touch anything above)
+   ============================================================ */
+
+/* subtle film-grain texture over everything, for a less "flat digital" feel */
+.grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,\
+<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'>\
+<filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter>\
+<rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+}
+
+/* stronger overall vignette + a deeper base gradient so edges feel heavier */
+.atmosphere {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(94, 107, 120, 0.3), transparent 48%),
+    radial-gradient(ellipse at 50% -8%, rgba(60, 66, 73, 0.55), transparent 60%),
+    radial-gradient(ellipse at 50% 110%, rgba(255, 90, 43, 0.2), transparent 62%),
+    radial-gradient(ellipse at 8% 100%, rgba(255, 90, 43, 0.16), transparent 45%),
+    radial-gradient(ellipse at 92% 100%, rgba(255, 90, 43, 0.16), transparent 45%),
+    linear-gradient(180deg, #23262b 0%, var(--void-2) 16%, var(--void) 45%, var(--void-2) 100%);
+}
+
+/* ---------- fog banks, near the top of the viewport ---------- */
+.fog {
+  position: absolute;
+  left: -20%;
+  width: 140%;
+  height: 34vh;
+  top: -6vh;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(180, 182, 190, 0.16) 0%,
+    rgba(180, 182, 190, 0.07) 40%,
+    transparent 72%
+  );
+  filter: blur(18px);
+  opacity: 0.8;
+}
+.fog--1 {
+  animation: fog-drift-a 46s ease-in-out infinite;
+}
+.fog--2 {
+  top: -2vh;
+  height: 26vh;
+  opacity: 0.55;
+  animation: fog-drift-b 62s ease-in-out infinite;
+}
+.fog--3 {
+  top: 4vh;
+  height: 20vh;
+  opacity: 0.4;
+  animation: fog-drift-a 38s ease-in-out infinite reverse;
+}
+
+@keyframes fog-drift-a {
+  0% {
+    transform: translateX(-4%) scaleX(1);
+  }
+  50% {
+    transform: translateX(4%) scaleX(1.05);
+  }
+  100% {
+    transform: translateX(-4%) scaleX(1);
+  }
+}
+@keyframes fog-drift-b {
+  0% {
+    transform: translateX(3%);
+  }
+  50% {
+    transform: translateX(-5%);
+  }
+  100% {
+    transform: translateX(3%);
+  }
+}
+
+/* ---------- broken ground with lava veins, pinned to the bottom ---------- */
+.ground {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 20vh;
+  z-index: 1;
+  pointer-events: none;
+}
+.ground__silhouette {
+  fill: #050403;
+  filter: drop-shadow(0 -6px 18px rgba(0, 0, 0, 0.7));
+}
+.ground__lava {
+  fill: none;
+  stroke: var(--ember);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 8px rgba(255, 90, 43, 0.9)) drop-shadow(0 0 16px rgba(255, 90, 43, 0.5));
+  animation: lava-pulse 4.2s ease-in-out infinite;
+}
+.ground__lava:nth-of-type(3) {
+  animation-delay: 0.6s;
+}
+.ground__lava:nth-of-type(4) {
+  animation-delay: 1.4s;
+}
+.ground__lava:nth-of-type(5) {
+  animation-delay: 2.1s;
+}
+
+@keyframes lava-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.lava-glow {
+  position: absolute;
+  bottom: -6vh;
+  width: 34vw;
+  height: 30vh;
+  z-index: 1;
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(255, 90, 43, 0.35), transparent 70%);
+  filter: blur(20px);
+  animation: lava-glow-pulse 5s ease-in-out infinite;
+}
+.lava-glow--left {
+  left: -6vw;
+  animation-delay: 0.3s;
+}
+.lava-glow--right {
+  right: -6vw;
+  animation-delay: 1.6s;
+}
+.lava-glow--center {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 42vw;
+  opacity: 0.7;
+  animation-delay: 2.4s;
+}
+
+@keyframes lava-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fog,
+  .ground__lava,
+  .lava-glow {
+    animation: none !important;
+  }
+}
+
+/* ============================================================
+   EXACT-REFERENCE BACKGROUND — misty blue-grey sky, ruins,
+   fading down into the dark void and the lava-cracked ground.
+   (additive layer, nothing above is touched)
+   ============================================================ */
+
+.ruins {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 34vh;
+  z-index: 1;
+  pointer-events: none;
+  filter: blur(0.6px);
+  -webkit-mask-image: linear-gradient(to bottom, black 45%, transparent 96%);
+  mask-image: linear-gradient(to bottom, black 45%, transparent 96%);
+}
+.ruins__hills {
+  fill: var(--mist);
+  opacity: 0.32;
+}
+.ruins__structures rect,
+.ruins__structures polygon {
+  fill: var(--mist-dim);
+  opacity: 0.7;
+}
+
+/* re-tune the fog banks toward the same cool blue-grey as the ruins,
+   instead of a neutral grey, so the whole sky band reads as one scene */
+.fog {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(124, 133, 144, 0.22) 0%,
+    rgba(94, 107, 120, 0.1) 42%,
+    transparent 72%
+  );
+}
+
+/* ============================================================
+   LAVA CANYON SCENE — jagged rock walls, branching lava veins,
+   a glowing river at the floor, and rolling fog over the peaks.
+   Replaces the earlier ruins concept per the new reference photo.
+   (still additive: nothing above this point is touched)
+   ============================================================ */
+
+.canyon {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.canyon__rock {
+  fill: #17130f;
+  filter: drop-shadow(0 0 40px rgba(0, 0, 0, 0.6));
+}
+
+.canyon__far-peaks {
+  fill: var(--mist-dim);
+  opacity: 0.28;
+}
+
+.canyon__lava {
+  fill: none;
+  stroke: var(--ember);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 10px rgba(255, 90, 43, 0.95))
+    drop-shadow(0 0 22px rgba(255, 90, 43, 0.55));
+  animation: lava-pulse 4s ease-in-out infinite;
+}
+.canyon__lava:nth-of-type(4n + 1) {
+  animation-delay: 0.2s;
+}
+.canyon__lava:nth-of-type(4n + 2) {
+  animation-delay: 1.1s;
+}
+.canyon__lava:nth-of-type(4n + 3) {
+  animation-delay: 2s;
+}
+.canyon__lava:nth-of-type(4n + 4) {
+  animation-delay: 2.8s;
+}
+
+.canyon__river {
+  fill: none;
+  stroke: var(--ember-glow);
+  stroke-width: 10;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 18px rgba(255, 138, 76, 1)) drop-shadow(0 0 40px rgba(255, 90, 43, 0.7));
+  animation: lava-pulse 3.2s ease-in-out infinite;
+}
+
+/* rising warm haze over the lava river, faded upward into the cool fog */
+.haze {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  width: 46vw;
+  height: 46vh;
+  transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at 50% 100%,
+    rgba(255, 120, 50, 0.3),
+    rgba(255, 90, 43, 0.08) 45%,
+    transparent 75%
+  );
+  filter: blur(10px);
+  animation: haze-breathe 6s ease-in-out infinite;
+}
+@keyframes haze-breathe {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* a fourth, lower fog bank so mist rolls across the mountain peaks too,
+   not just the open sky above them */
+.fog--4 {
+  top: 20vh;
+  height: 30vh;
+  opacity: 0.5;
+  animation: fog-drift-b 54s ease-in-out infinite reverse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .canyon__lava,
+  .canyon__river,
+  .haze {
+    animation: none !important;
+  }
+}
+
+/* ============================================================
+   REAL PHOTO BACKGROUND — uses the uploaded lava-canyon photo
+   directly instead of the hand-drawn SVG version. The SVG canyon
+   is kept in the markup (switched off below) in case you ever
+   want to go back to the vector version.
+   ============================================================ */
+
+.bg-photo {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url('../assets/backgrounds/bg.gif');
+  background-size: cover;
+  background-position: center 65%;
+  background-repeat: no-repeat;
+  filter: saturate(1.08) contrast(1.05);
+}
+
+/* switch off the hand-drawn canyon now that the real photo is in place */
+.canyon {
+  display: none;
+}
+
+/* fog now blends into the photo instead of sitting as flat grey shapes */
+.fog {
+  mix-blend-mode: screen;
+  opacity: 0.5;
+}
+.fog--1 {
+  opacity: 0.45;
+}
+.fog--2 {
+  opacity: 0.35;
+}
+.fog--3 {
+  opacity: 0.28;
+}
+.fog--4 {
+  opacity: 0.4;
+  top: 30vh;
+}
+
+/* haze realigned to the lava river in the photo (slightly left of center, low) */
+.haze {
+  width: 50vw;
+  height: 40vh;
+  left: 48%;
+  background: radial-gradient(
+    ellipse at 50% 100%,
+    rgba(255, 110, 40, 0.34),
+    rgba(255, 90, 43, 0.1) 45%,
+    transparent 75%
+  );
+}
+
+/* scrim — darkens top and bottom so hero/credits text stays legible
+   over a busy photographic background; leaves the map's midsection
+   a little clearer since the funnel graphic has its own contrast */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(5, 4, 3, 0.62) 0%,
+    rgba(5, 4, 3, 0.22) 22%,
+    rgba(5, 4, 3, 0.3) 50%,
+    rgba(5, 4, 3, 0.24) 78%,
+    rgba(5, 4, 3, 0.68) 100%
+  );
+}
+
+/* ============================================================
+   TEXT LEGIBILITY OVER PHOTO — stronger shadows, slightly larger
+   sizes, warmer accent color so type reads clearly against the
+   rock / lava / fog photo instead of a flat dark background.
+   ============================================================ */
+
+.hero-title {
+  font-size: clamp(2.8rem, 8.5vw, 6.6rem);
+  text-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.85),
+    0 0 40px rgba(255, 90, 43, 0.35);
+}
+.hero-desc {
+  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
+}
+.eyebrow {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+  color: #e8b463;
+}
+.map-title,
+.credits-title {
+  text-shadow:
+    0 4px 20px rgba(0, 0, 0, 0.85),
+    0 0 30px rgba(255, 90, 43, 0.25);
+}
+.ring-label span {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95);
+}
+.ring-label small {
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.95);
+}
+.credits-list li span:last-child {
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+}
+.scroll-hint {
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+}
+
+@media (max-width: 720px) {
+  .bg-photo {
+    background-position: 62% 70%;
+  }
+}
+
+/* ============================================================
+   MAP AS A REAL IMAGE — horizontal selectable regions
+   Replaces the SVG-drawn funnel. .funnel-wrap now holds the
+   actual artwork (object-fit: contain, so it's never stretched)
+   plus a transparent overlay of horizontal click/hover regions,
+   positioned in JS to match wherever the image actually renders.
+   ============================================================ */
+
+.map-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 10px 40px rgba(0, 0, 0, 0.6));
+}
+
+.map-regions {
+  position: absolute;
+  inset: 0;
+}
+
+.map-region {
+  position: absolute;
+  cursor: pointer;
+  background: rgba(255, 90, 43, 0);
+  outline: 1px solid rgba(255, 90, 43, 0);
+  outline-offset: -1px;
+  transition:
+    background 0.25s ease,
+    outline-color 0.25s ease;
+  display: flex;
+  align-items: center;
+}
+
+.map-region:hover,
+.map-region:focus-visible {
+  background: rgba(255, 90, 43, 0.16);
+  outline-color: rgba(255, 140, 76, 0.75);
+}
+
+.map-region__tag {
+  position: absolute;
+  left: 14px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  color: var(--bone);
+  background: rgba(11, 9, 8, 0.72);
+  border: 1px solid rgba(255, 90, 43, 0.4);
+  padding: 5px 10px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+  pointer-events: none;
+}
+.map-region:hover .map-region__tag,
+.map-region:focus-visible .map-region__tag {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+@media (max-width: 720px) {
+  .map-region__tag {
+    font-size: 0.6rem;
+    padding: 4px 8px;
+    left: 8px;
+  }
+}
