@@ -302,6 +302,87 @@
   /* ------------------------------------------------------------------------
      3b. PAGE CONTROL — locked, one-section-at-a-time scrolling
   ------------------------------------------------------------------------ */
+  // const track = document.getElementById('scroll-track');
+  // const panels = document.querySelectorAll('.panel');
+  // const railDots = document.querySelectorAll('.rail__dot');
+  // const totalPanels = panels.length;
+
+  // let currentIndex = 0;
+  // let isAnimating = false;
+  // const ANIMATION_MS = 720;
+  // const WHEEL_THRESHOLD = 12;
+
+  // function goTo(nextIndex) {
+  //   nextIndex = Math.max(0, Math.min(totalPanels - 1, nextIndex));
+  //   if (nextIndex === currentIndex || isAnimating) return;
+  //   currentIndex = nextIndex;
+  //   track.style.transform = `translateY(-${currentIndex * 100}vh)`;
+  //   railDots.forEach((dot, i) => dot.classList.toggle('is-active', i === currentIndex));
+  //   isAnimating = true;
+  //   setTimeout(() => {
+  //     isAnimating = false;
+  //   }, ANIMATION_MS);
+  // }
+
+  // function next() {
+  //   goTo(currentIndex + 1);
+  // }
+  // function prev() {
+  //   goTo(currentIndex - 1);
+  // }
+
+  // // Mouse wheel / trackpad
+  // window.addEventListener(
+  //   'wheel',
+  //   (e) => {
+  //     if (viewerOpen) return; // let the viewer own scroll/close instead
+  //     e.preventDefault();
+  //     if (isAnimating) return;
+  //     if (e.deltaY > WHEEL_THRESHOLD) next();
+  //     else if (e.deltaY < -WHEEL_THRESHOLD) prev();
+  //   },
+  //   { passive: false },
+  // );
+
+  // // Touch swipe
+  // let touchStartY = null;
+  // window.addEventListener(
+  //   'touchstart',
+  //   (e) => {
+  //     if (viewerOpen) return;
+  //     touchStartY = e.touches[0].clientY;
+  //   },
+  //   { passive: true },
+  // );
+
+  // window.addEventListener(
+  //   'touchend',
+  //   (e) => {
+  //     if (viewerOpen || touchStartY === null) return;
+  //     const delta = touchStartY - e.changedTouches[0].clientY;
+  //     if (Math.abs(delta) > 50) {
+  //       delta > 0 ? next() : prev();
+  //     }
+  //     touchStartY = null;
+  //   },
+  //   { passive: true },
+  // );
+
+  // // Keyboard
+  // window.addEventListener('keydown', (e) => {
+  //   if (viewerOpen) {
+  //     if (e.key === 'Escape') closeViewer();
+  //     return;
+  //   }
+  //   if (['ArrowDown', 'PageDown'].includes(e.key)) {
+  //     e.preventDefault();
+  //     next();
+  //   } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
+  //     e.preventDefault();
+  //     prev();
+  //   }
+  // });
+
   const track = document.getElementById('scroll-track');
   const panels = document.querySelectorAll('.panel');
   const railDots = document.querySelectorAll('.rail__dot');
@@ -309,6 +390,7 @@
 
   let currentIndex = 0;
   let isAnimating = false;
+  let cloudsOpened = false;
   const ANIMATION_MS = 720;
   const WHEEL_THRESHOLD = 12;
 
@@ -324,18 +406,62 @@
     }, ANIMATION_MS);
   }
 
-  function next() {
-    goTo(currentIndex + 1);
-  }
-  function prev() {
-    goTo(currentIndex - 1);
+  function openCloudsAndGo() {
+    isAnimating = true;
+
+    document.querySelector('.rail').classList.add('is-visible');
+
+    gsap.to('.hero-clouds--left', { xPercent: -100, ease: 'power2.in', duration: 1.2 });
+    gsap.to('.hero-clouds--right', { xPercent: 100, ease: 'power2.in', duration: 1.2 });
+    gsap.to('.hero-title-wrap', { opacity: 0, yPercent: -20, ease: 'power1.in', duration: 1 });
+    gsap.to('.hero-sky', {
+      opacity: 0,
+      ease: 'power1.in',
+      duration: 1.2,
+      onComplete: () => {
+        cloudsOpened = true;
+        isAnimating = false;
+        goTo(1);
+      },
+    });
   }
 
-  // Mouse wheel / trackpad
+  function closeClouds() {
+    document.querySelector('.rail').classList.remove('is-visible');
+    gsap.to('.hero-clouds--left', { xPercent: 0, ease: 'power2.out', duration: 1.2 });
+    gsap.to('.hero-clouds--right', { xPercent: 0, ease: 'power2.out', duration: 1.2 });
+    gsap.to('.hero-title-wrap', { opacity: 1, yPercent: 0, ease: 'power1.out', duration: 1.2 });
+    gsap.to('.hero-sky', {
+      opacity: 1,
+      ease: 'power1.out',
+      duration: 1.2,
+      onComplete: () => {
+        cloudsOpened = false;
+      },
+    });
+  }
+
+  function next() {
+    if (currentIndex === 0 && !cloudsOpened) {
+      openCloudsAndGo();
+    } else {
+      goTo(currentIndex + 1);
+    }
+  }
+
+  function prev() {
+    if (currentIndex === 1 && cloudsOpened) {
+      goTo(0);
+      setTimeout(closeClouds, ANIMATION_MS);
+    } else {
+      goTo(currentIndex - 1);
+    }
+  }
+
   window.addEventListener(
     'wheel',
     (e) => {
-      if (viewerOpen) return; // let the viewer own scroll/close instead
+      if (viewerOpen) return;
       e.preventDefault();
       if (isAnimating) return;
       if (e.deltaY > WHEEL_THRESHOLD) next();

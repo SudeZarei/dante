@@ -18,8 +18,10 @@
   --mist-blue: #5e6b78;
 
   --font-display: 'Cinzel', serif;
-  --font-body: 'EB Garamond', serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --font-body: 'Cormorant Garamond', serif;
+  --font-mono: 'Jost', sans-serif;
+  --parchment: #ede3cc;
+  --ash: #6b6259;
 
   --panel-h: 100vh;
 }
@@ -36,7 +38,7 @@ body {
   background: var(--void);
   color: var(--bone);
   font-family: var(--font-body);
-  overflow: hidden; /* scroll is hijacked by JS, see main.js */
+  overflow: hidden;
 }
 
 ::selection {
@@ -46,6 +48,65 @@ body {
 
 button {
   font-family: inherit;
+}
+
+/* ============================================================
+   CLOUDS
+============================================================ */
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.35em;
+  font-size: 1rem;
+  margin: 0 0 12px;
+  color: var(--ash);
+}
+
+.hero-latin {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+  margin: 18px 0 4px;
+}
+
+.hero-translation,
+.hero-scroll-hint {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+}
+.hero-layer {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+}
+.hero-sky {
+  z-index: 2;
+  background-color: var(--void);
+}
+.hero-clouds {
+  z-index: 3;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+.hero-clouds--left {
+  background-position: left center;
+}
+.hero-clouds--right {
+  background-position: right center;
+}
+
+.hero-title-wrap {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #2a2117;
 }
 
 /* ============================================================
@@ -152,6 +213,14 @@ button {
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+.rail.is-visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 .rail__dot {
   width: 10px;
@@ -200,31 +269,31 @@ button {
 .eyebrow {
   font-family: var(--font-mono);
   letter-spacing: 0.32em;
-  font-size: 0.72rem;
-  color: var(--gold);
+  font-size: 1rem;
+  color: var(--ash);
   margin: 0 0 18px;
 }
 .hero-title {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(2.6rem, 8vw, 6.2rem);
-  letter-spacing: 0.08em;
-  margin: 0 0 22px;
-  color: var(--bone);
-  text-shadow: 0 0 30px rgba(255, 90, 43, 0.25);
+  font-weight: 600;
+  font-size: clamp(2.4rem, 6vw, 5rem);
+  letter-spacing: 0.03em;
+  margin: 0;
 }
 .hero-desc {
-  max-width: 560px;
-  font-size: 1.15rem;
+  max-width: 800px;
+  font-size: 2rem;
   line-height: 1.7;
   color: var(--bone-dim);
   font-style: italic;
+  color: #4a3c31;
 }
 .hero-desc code {
   font-family: var(--font-mono);
   font-style: normal;
   font-size: 0.8em;
   color: var(--ember-glow);
+  color: #b23a2e;
 }
 
 .scroll-hint {
@@ -244,9 +313,11 @@ button {
   font-size: 0.7rem;
   letter-spacing: 0.3em;
   transition: color 0.3s ease;
+  color: var(--ash);
 }
 .scroll-hint:hover {
-  color: var(--ember-glow);
+  /* color: var(--ember-glow); */
+  color: #2a2117;
 }
 .scroll-hint svg {
   animation: bob 1.8s ease-in-out infinite;
@@ -927,18 +998,26 @@ button {
    ============================================================ */
 
 .hero-title {
-  font-size: clamp(2.8rem, 8.5vw, 6.6rem);
+  font-size: clamp(2rem, 8vw, 6.6rem);
   text-shadow:
     0 4px 24px rgba(0, 0, 0, 0.85),
     0 0 40px rgba(255, 90, 43, 0.35);
 }
 .hero-desc {
-  font-size: clamp(1.1rem, 2vw, 1.3rem);
+  font-size: clamp(2rem, 8vw, 2rem);
   text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
 }
 .eyebrow {
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
-  color: #e8b463;
+  color: var(--ash);
+  font-size: 1.5rem;
+}
+.desc-first,
+.desc-second {
+  margin: 0;
+}
+.desc-first {
+  font-size: clamp(3.5rem, 8vw, 3.5rem);
 }
 .map-title,
 .credits-title {
@@ -962,6 +1041,21 @@ button {
 @media (max-width: 720px) {
   .bg-photo {
     background-position: 62% 70%;
+  }
+  .hero-title {
+    font-size: clamp(2rem, 8vw, 6.6rem);
+    text-shadow:
+      0 4px 24px rgba(0, 0, 0, 0.85),
+      0 0 40px rgba(255, 90, 43, 0.35);
+  }
+  .hero-desc {
+    font-size: clamp(1.3rem, 8vw, 1.3rem);
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
+  }
+  .eyebrow {
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
+    color: var(--ash);
+    font-size: 0.8rem;
   }
 }
 

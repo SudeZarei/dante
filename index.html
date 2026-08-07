@@ -8,11 +8,15 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fonts: Cinzel, Cormorant Garamond, Jost -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&family=Jost:wght@400;500&display=swap"
       rel="stylesheet"
     />
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="js/main.js"></script>
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
@@ -100,24 +104,34 @@
     <main id="scroll-track">
       <!-- SECTION 0 — HERO -->
       <section class="panel panel--hero" id="panel-0">
-        <p class="eyebrow">A PORTFOLIO IN NINE PARTS</p>
-        <h1 class="hero-title">THE DESCENT</h1>
-        <p class="hero-desc" data-editable="hero-description">
-          Replace this line in <code>index.html</code> (search for
-          <code>data-editable="hero-description"</code>) with your own artist statement or
-          introduction.
-        </p>
-        <button class="scroll-hint" data-jump="1" aria-label="Scroll to the map">
-          <span>ENTER</span>
-          <svg width="14" height="20" viewBox="0 0 14 20">
-            <path
-              d="M7 0 V17 M1 11 L7 17 L13 11"
-              stroke="currentColor"
-              fill="none"
-              stroke-width="1.4"
-            />
-          </svg>
-        </button>
+        <div class="hero-layer hero-sky" style="background-image: url('assets/bg-sky.jpg')"></div>
+        <div
+          class="hero-layer hero-clouds hero-clouds--left"
+          style="background-image: url('assets/clouds-left.png')"
+        ></div>
+        <div
+          class="hero-layer hero-clouds hero-clouds--right"
+          style="background-image: url('assets/clouds-right.png')"
+        ></div>
+
+        <div class="hero-title-wrap">
+          <p class="eyebrow">Interactive Visualization</p>
+          <h1 class="hero-title">Dante’s Inferno</h1>
+          <p class="hero-desc desc-first">Lasciate ogni speranza, voi ch’entrate.</p>
+          <p class="hero-desc desc-second">Abandon all hope, you who enter here.</p>
+
+          <button class="scroll-hint" onclick="next()" aria-label="Scroll to the map">
+            <span>ENTER</span>
+            <svg width="14" height="20" viewBox="0 0 14 20">
+              <path
+                d="M7 0 V17 M1 11 L7 17 L13 11"
+                stroke="currentColor"
+                fill="none"
+                stroke-width="1.4"
+              />
+            </svg>
+          </button>
+        </div>
       </section>
 
       <!-- SECTION 1 — MAP -->
@@ -142,14 +156,10 @@
         <p class="eyebrow">FIN</p>
         <h2 class="credits-title">CREDITS</h2>
         <ul class="credits-list" data-editable="credits-list">
-          <li><span>Art &amp; Direction</span><span>Your Name</span></li>
+          <li><span>Art &amp; Direction</span><span>Kimia Borjian</span></li>
           <li><span>Built With</span><span>HTML, CSS, JavaScript</span></li>
           <li><span>Inspired By</span><span>Dante's Inferno</span></li>
         </ul>
-        <p class="credits-note">
-          Edit the list above in <code>index.html</code> — search for
-          <code>data-editable="credits-list"</code>.
-        </p>
       </section>
     </main>
 
