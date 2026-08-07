@@ -108,6 +108,22 @@ button {
   height: 100%;
   color: #2a2117;
 }
+@media (max-width: 720px) {
+  .hero-clouds {
+    background-size: 150% 100%;
+    width: 100vw;
+  }
+
+  .hero-clouds--left {
+    background-position: center center;
+    width: 100vw;
+  }
+
+  .hero-clouds--right {
+    background-position: center center;
+    width: 100vw;
+  }
+}
 
 /* ============================================================
    ATMOSPHERE — shared background across all panels
@@ -573,8 +589,8 @@ button {
     opacity: 0.35;
   }
   .funnel-wrap {
-    width: 94vw;
-    height: 68vh;
+    width: 98vw;
+    height: 75vh;
   }
   .ring-label {
     font-size: 0.72rem;
@@ -1130,5 +1146,9 @@ button {
     font-size: 0.6rem;
     padding: 4px 8px;
     left: 8px;
+  }
+  .map-image {
+    transform: scale(1.5);
+    object-fit: contain;
   }
 }
