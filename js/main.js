@@ -157,84 +157,105 @@
      out exactly where the image is actually drawn, then position each
      ring's clickable strip against that, not against the wrapper.
   ------------------------------------------------------------------------ */
-  const mapImage = document.getElementById('map-image');
-  const regionsLayer = document.getElementById('map-regions');
-  const funnelWrap = document.querySelector('.funnel-wrap');
+  // const mapImage = document.getElementById('map-image');
+  // const regionsLayer = document.getElementById('map-regions');
+  // const funnelWrap = document.querySelector('.funnel-wrap');
 
-  function getRenderedImageRect() {
-    const wrapRect = funnelWrap.getBoundingClientRect();
-    const naturalRatio = (mapImage.naturalWidth || 2760) / (mapImage.naturalHeight || 1504);
-    const boxRatio = wrapRect.width / wrapRect.height;
+  // function getRenderedImageRect() {
+  //   const wrapRect = funnelWrap.getBoundingClientRect();
+  //   const naturalRatio = (mapImage.naturalWidth || 2760) / (mapImage.naturalHeight || 1504);
+  //   const boxRatio = wrapRect.width / wrapRect.height;
 
-    let renderW, renderH, offsetX, offsetY;
-    if (naturalRatio > boxRatio) {
-      // image is relatively wider than the box -> letterboxed top/bottom
-      renderW = wrapRect.width;
-      renderH = renderW / naturalRatio;
-      offsetX = 0;
-      offsetY = (wrapRect.height - renderH) / 2;
-    } else {
-      // image is relatively taller than the box -> letterboxed left/right
-      renderH = wrapRect.height;
-      renderW = renderH * naturalRatio;
-      offsetY = 0;
-      offsetX = (wrapRect.width - renderW) / 2;
-    }
-    return { renderW, renderH, offsetX, offsetY };
-  }
+  //   let renderW, renderH, offsetX, offsetY;
+  //   if (naturalRatio > boxRatio) {
+  //     // image is relatively wider than the box -> letterboxed top/bottom
+  //     renderW = wrapRect.width;
+  //     renderH = renderW / naturalRatio;
+  //     offsetX = 0;
+  //     offsetY = (wrapRect.height - renderH) / 2;
+  //   } else {
+  //     // image is relatively taller than the box -> letterboxed left/right
+  //     renderH = wrapRect.height;
+  //     renderW = renderH * naturalRatio;
+  //     offsetY = 0;
+  //     offsetX = (wrapRect.width - renderW) / 2;
+  //   }
+  //   return { renderW, renderH, offsetX, offsetY };
+  // }
 
-  function buildMapRegions() {
-    regionsLayer.innerHTML = '';
-    const { renderW, renderH, offsetX, offsetY } = getRenderedImageRect();
+  // function buildMapRegions() {
+  //   regionsLayer.innerHTML = '';
+  //   const { renderW, renderH, offsetX, offsetY } = getRenderedImageRect();
 
-    RINGS.forEach((ring) => {
-      const region = document.createElement('div');
-      region.className = 'map-region';
-      region.style.left = `${offsetX}px`;
-      region.style.width = `${renderW}px`;
-      region.style.top = `${offsetY + ring.top * renderH}px`;
-      region.style.height = `${(ring.bottom - ring.top) * renderH}px`;
-      region.setAttribute('tabindex', '0');
-      region.setAttribute('role', 'button');
-      region.setAttribute('aria-label', `Open ${ring.title}`);
+  //   RINGS.forEach((ring) => {
+  //     const region = document.createElement('div');
+  //     region.className = 'map-region';
+  //     region.style.left = `${offsetX}px`;
+  //     region.style.width = `${renderW}px`;
+  //     region.style.top = `${offsetY + ring.top * renderH}px`;
+  //     region.style.height = `${(ring.bottom - ring.top) * renderH}px`;
+  //     region.setAttribute('tabindex', '0');
+  //     region.setAttribute('role', 'button');
+  //     region.setAttribute('aria-label', `Open ${ring.title}`);
 
-      const shape = shapeFor(ring);
-      region.style.clipPath = `polygon(
-        ${shape.topLeft}% 0%, ${shape.topRight}% 0%,
-        ${shape.bottomRight}% 100%, ${shape.bottomLeft}% 100%)`;
+  //     const shape = shapeFor(ring);
+  //     region.style.clipPath = `polygon(
+  //       ${shape.topLeft}% 0%, ${shape.topRight}% 0%,
+  //       ${shape.bottomRight}% 100%, ${shape.bottomLeft}% 100%)`;
 
-      const tag = document.createElement('span');
-      tag.className = 'map-region__tag';
-      tag.textContent = `CIRCLE ${ring.roman} — ${ring.title.toUpperCase()}`;
-      // keep the tag inside the trapezoid at both its top and bottom edge
-      const safeLeftPct = Math.max(shape.topLeft, shape.bottomLeft);
-      tag.style.left = `calc(${safeLeftPct}% + 10px)`;
-      region.appendChild(tag);
+  //     const tag = document.createElement('span');
+  //     tag.className = 'map-region__tag';
+  //     tag.textContent = `CIRCLE ${ring.roman} — ${ring.title.toUpperCase()}`;
+  //     // keep the tag inside the trapezoid at both its top and bottom edge
+  //     const safeLeftPct = Math.max(shape.topLeft, shape.bottomLeft);
+  //     tag.style.left = `calc(${safeLeftPct}% + 10px)`;
+  //     region.appendChild(tag);
 
-      region.addEventListener('click', () => openViewer(ring));
-      region.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          openViewer(ring);
-        }
-      });
+  //     region.addEventListener('click', () => openViewer(ring));
+  //     region.addEventListener('keydown', (e) => {
+  //       if (e.key === 'Enter' || e.key === ' ') {
+  //         e.preventDefault();
+  //         openViewer(ring);
+  //       }
+  //     });
 
-      regionsLayer.appendChild(region);
+  //     regionsLayer.appendChild(region);
+  //   });
+  // }
+
+  // let resizeTimer;
+  // window.addEventListener('resize', () => {
+  //   clearTimeout(resizeTimer);
+  //   resizeTimer = setTimeout(buildMapRegions, 120);
+  // });
+
+  // if (mapImage.complete) {
+  //   buildMapRegions();
+  // } else {
+  //   mapImage.addEventListener('load', buildMapRegions);
+  // }
+  const mapAreas = document.querySelectorAll('.map-area');
+
+  mapAreas.forEach((area) => {
+    area.setAttribute('tabindex', '0');
+    area.setAttribute('role', 'button');
+
+    const index = parseInt(area.getAttribute('data-index'), 10);
+
+    const activate = () => {
+      if (RINGS[index]) {
+        openViewer(RINGS[index]);
+      }
+    };
+
+    area.addEventListener('click', activate);
+    area.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        activate();
+      }
     });
-  }
-
-  let resizeTimer;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(buildMapRegions, 120);
   });
-
-  if (mapImage.complete) {
-    buildMapRegions();
-  } else {
-    mapImage.addEventListener('load', buildMapRegions);
-  }
-
   /* ------------------------------------------------------------------------
      3a. FULLSCREEN VIEWER
   ------------------------------------------------------------------------ */
@@ -536,4 +557,19 @@
     ember.style.animationDelay = delay;
     embersContainer.appendChild(ember);
   }
+
+  /* ------------------------------------------------------------------------
+     4. REMOVE LOADER WHEN READY
+  ------------------------------------------------------------------------ */
+  window.addEventListener('load', () => {
+    const loader = document.getElementById('loader');
+    if (!loader) return;
+
+    const MIN_VISIBLE_MS = 2500;
+
+    setTimeout(() => {
+      loader.classList.add('is-hidden');
+      loader.addEventListener('transitionend', () => loader.remove(), { once: true });
+    }, MIN_VISIBLE_MS);
+  });
 })();

@@ -20,6 +20,10 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
+    <!-- LOADING SCREEN -->
+    <div id="loader" class="loader" aria-hidden="true">
+      <img src="assets/falling-man.png" alt="Falling character" class="diver-img" />
+    </div>
     <!-- ambient background layer, sits behind everything, shared by all sections -->
     <div class="atmosphere" aria-hidden="true">
       <div class="bg-photo"></div>
@@ -136,18 +140,64 @@
 
       <!-- SECTION 1 — MAP -->
       <section class="panel panel--map" id="panel-1">
-        <div class="map-header">
-          <p class="eyebrow">CLICK A RING TO DESCEND</p>
-          <h2 class="map-title">THE CIRCLES</h2>
-        </div>
-        <div class="funnel-wrap">
-          <img
-            id="map-image"
-            class="map-image"
-            src="assets/map/map.gif"
-            alt="The nine circles, cross-section"
-          />
-          <div id="map-regions" class="map-regions"></div>
+        <div class="map-frame">
+          <img class="map-bg" src="assets/map/map.gif" alt="The nine circles, cross-section" />
+
+          <svg
+            class="map-svg"
+            viewBox="0 0 1000 562"
+            preserveAspectRatio="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <!-- 
+       path
+      -->
+            <path
+              class="map-area"
+              data-index="0"
+              d="M195.5 96C207.5 138 829.5 136 833 94.5C827.5 57 216.5 50 195.5 96Z"
+            />
+            <path
+              class="map-area"
+              data-index="1"
+              d="M828.5 103C743 134 314.5 137 201.5 104.5L231 149L347 163.5C344.6 165.1 686.5 176.5 797.5 148.5L798.615 147.199C812.731 130.736 817.29 125.42 828.5 103Z"
+            />
+            <path
+              class="map-area"
+              data-index="2"
+              d="M795.5 150C757.5 166 346.5 176.5 233.5 151C250 175.5 255.5 185.5 261 197C381 219.5 723 209 769.5 196C775 186.5 782.5 174 795.5 150Z"
+            />
+            <path
+              class="map-area"
+              data-index="3"
+              d="M768.5 197C627 216 436 216 262.5 198C269 210.5 285.5 237 287.5 241C363.5 259.5 698 256.5 742 241C750.5 228 762.5 210.5 768.5 197Z"
+            />
+            <path
+              class="map-area"
+              data-index="4"
+              d="M742 241C681 257 412 263 287.5 241C296 258 307.5 276.5 312.5 288.5C443 301.5 612 302 716 287.5C723 277 736 256.5 742 241Z"
+            />
+            <path
+              class="map-area"
+              data-index="5"
+              d="M715.5 289C616 302 442 306 313.5 287.5C321.88 304.26 334.634 322.478 341.7 332.571L342 333C460 342.5 583.5 346.5 689.5 331.5C696.5 321 709 305 715.5 289Z"
+            />
+            <path
+              class="map-area"
+              data-index="6"
+              d="M689 332C623 344.5 411.5 343.5 343 334C351.5 351 362 366 369 376C411 387.5 609.5 390.5 660.5 376C667.5 365.5 680 348.5 689 332Z"
+            />
+            <path
+              class="map-area"
+              data-index="7"
+              d="M660.5 377C592.5 390 437.5 388.5 368.5 377C379.5 393.5 401 430 410.5 444C479 424 562 423 618.5 442C626 431.5 650 393.5 660.5 377Z"
+            />
+            <path
+              class="map-area"
+              data-index="8"
+              d="M618.5 443.03C567.5 424.53 469 423.474 411 444.974C453 511.974 453 526.088 465.5 538.088C507 553.088 527.5 556.088 567.5 535.588C575 525.088 574 519.471 618.5 443.03Z"
+            />
+          </svg>
         </div>
       </section>
 
