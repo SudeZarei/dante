@@ -559,17 +559,78 @@
   }
 
   /* ------------------------------------------------------------------------
-     4. REMOVE LOADER WHEN READY
+     4. DANTE'S DESCENT PRELOADER (LOOPING LOGIC)
   ------------------------------------------------------------------------ */
+  const hellStages = [
+    { stage: 'STAGE_01', title: 'CIRCLE I — LIMBO' },
+    { stage: 'STAGE_02', title: 'CIRCLE II — LUST' },
+    { stage: 'STAGE_03', title: 'CIRCLE III — GLUTTONY' },
+    { stage: 'STAGE_04', title: 'CIRCLE IV — GREED' },
+    { stage: 'STAGE_05', title: 'CIRCLE V — WRATH' },
+    { stage: 'STAGE_06', title: 'CIRCLE VI — HERESY' },
+    { stage: 'STAGE_07', title: 'CIRCLE VII — VIOLENCE' },
+    { stage: 'STAGE_08', title: 'CIRCLE VIII — FRAUD' },
+    { stage: 'STAGE_09', title: 'CIRCLE IX — TREACHERY' },
+  ];
+
+  const loaderTextStage = document.getElementById('loader-stage');
+  const loaderTextTitle = document.getElementById('loader-title');
+  const loader = document.getElementById('loader');
+
+  let currentStage = 0;
+  let pageLoaded = false;
+
   window.addEventListener('load', () => {
-    const loader = document.getElementById('loader');
-    if (!loader) return;
+    pageLoaded = true;
 
-    const MIN_VISIBLE_MS = 2500;
-
-    setTimeout(() => {
-      loader.classList.add('is-hidden');
-      loader.addEventListener('transitionend', () => loader.remove(), { once: true });
-    }, MIN_VISIBLE_MS);
+    RINGS.forEach((ring) => {
+      if (ring.media && !isVideo(ring.media)) {
+        const preloadImg = new Image();
+        preloadImg.src = ring.media;
+      }
+    });
   });
+
+  if (loader && loaderTextStage && loaderTextTitle) {
+    function applyStage(index) {
+      loaderTextStage.classList.add('fade');
+      loaderTextTitle.classList.add('fade');
+
+      setTimeout(() => {
+        loaderTextStage.textContent = hellStages[index].stage;
+        loaderTextTitle.textContent = hellStages[index].title;
+        loaderTextStage.classList.remove('fade');
+        loaderTextTitle.classList.remove('fade');
+
+        const circleEl = document.querySelector(`.circle-${index + 1}`);
+        if (circleEl) circleEl.classList.add('is-active');
+      }, 350);
+    }
+
+    loaderTextStage.textContent = hellStages[0].stage;
+    loaderTextTitle.textContent = hellStages[0].title;
+    document.querySelector('.circle-1').classList.add('is-active');
+
+    const descentInterval = setInterval(() => {
+      currentStage++;
+
+      if (currentStage < hellStages.length) {
+        applyStage(currentStage);
+      } else {
+        if (pageLoaded) {
+          clearInterval(descentInterval);
+          setTimeout(() => {
+            loader.classList.add('is-hidden');
+            loader.addEventListener('transitionend', () => loader.remove(), { once: true });
+          }, 900);
+        } else {
+          currentStage = 0;
+
+          document.querySelectorAll('.circle').forEach((c) => c.classList.remove('is-active'));
+
+          applyStage(0);
+        }
+      }
+    }, 600);
+  }
 })();

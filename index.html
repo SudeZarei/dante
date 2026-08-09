@@ -20,9 +20,29 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <!-- LOADING SCREEN -->
-    <div id="loader" class="loader" aria-hidden="true">
-      <img src="assets/falling-man.png" alt="Falling character" class="diver-img" />
+    <!-- LOADING SCREEN (NINE CIRCLES) -->
+    <div id="loader" class="loader dither-in" aria-hidden="true">
+      <div class="vignette-overlay"></div>
+      <div class="scanline-overlay"></div>
+      <div class="grain-overlay"></div>
+
+      <div class="circles-wrapper">
+        <div class="circle circle-9 rotate-slow"></div>
+        <div class="circle circle-8 rotate-rev"></div>
+        <div class="circle circle-7 rotate-slow"></div>
+        <div class="circle circle-6 rotate-rev"></div>
+        <div class="circle circle-5 rotate-slow"></div>
+        <div class="circle circle-4 rotate-rev"></div>
+        <div class="circle circle-3 rotate-slow"></div>
+        <div class="circle circle-2 rotate-rev"></div>
+        <div class="circle circle-1 rotate-slow"></div>
+        <div class="center-dot flicker"></div>
+      </div>
+
+      <div class="loader-text-wrap">
+        <p class="loader-stage" id="loader-stage">STAGE_01</p>
+        <p class="loader-title" id="loader-title">CIRCLE I — LIMBO</p>
+      </div>
     </div>
     <!-- ambient background layer, sits behind everything, shared by all sections -->
     <div class="atmosphere" aria-hidden="true">

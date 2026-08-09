@@ -1204,32 +1204,17 @@ button {
   }
 }
 /* ============================================================
-   LOADING SCREEN (ENDLESS DESCENT)
+   LOADING SCREEN (9 CIRCLES DESCENT - EXACT MATCH)
    ============================================================ */
 #loader {
   position: fixed;
   inset: 0;
   z-index: 9999;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  /* گرادیانت از بالا به پایین با طیف میانی بسیار طولانی */
-  background: linear-gradient(
-    to bottom,
-    #c4baa4 0%,
-    /* بالاترین نقطه: کاملاً روشن */ #c4baa4 5%,
-    /* حفظ رنگ روشن در شروع */ #000000 75%,
-    /* طیف طولانی رنگ‌های میانی که به مرور تاریک می‌شود */ #000000 100%
-      /* پایین‌ترین نقطه: کاملاً مشکی */
-  );
-
-  /* ارتفاع بک‌گراند را 4 برابر صفحه می‌کنیم تا بتوانیم از بالا به پایینِ آن حرکت کنیم */
-  background-size: 100% 600%;
-
-  /* انیمیشن 1.5 ثانیه‌ای، با سرعت ثابت (linear) که پس از سیاه شدن کامل، ریست می‌شود */
-  animation: fall-gradient 3s linear infinite;
-
+  background-color: #080808;
   transition:
     opacity 0.8s ease,
     visibility 0.8s ease;
@@ -1241,31 +1226,137 @@ button {
   pointer-events: none;
 }
 
-/* حرکت بک‌گراند از بالایِ روشن به پایینِ تاریک */
-@keyframes fall-gradient {
-  0% {
-    background-position: 50% 0%; /* نمایش قسمت بالای گرادیانت (روشن) */
-  }
-  100% {
-    background-position: 50% 100%; /* رسیدن به انتهای گرادیانت (کاملاً مشکی) */
-  }
+.circles-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(80vmin, 560px);
+  height: min(80vmin, 560px);
 }
 
-/* --- استایل عکس آدمک در حال سقوط --- */
-.diver-img {
-  width: 65px;
-  height: auto;
-  opacity: 0.85;
-
-  /* لرزش بسیار ریز برای القای مقاومت هوا در حین سقوط */
-  animation: diver-flutter 0.3s infinite alternate ease-in-out;
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(217, 210, 197, 0.08);
+  box-shadow: none;
+  opacity: 0.25;
+  transition:
+    border 0.4s ease,
+    box-shadow 0.4s ease,
+    opacity 0.4s ease;
 }
 
-@keyframes diver-flutter {
-  0% {
-    transform: translateY(-3px);
+.circle.is-active {
+  border: 1px solid rgb(125, 0, 0);
+  box-shadow: rgba(125, 0, 0, 0.5) 0px 0px 12px;
+  opacity: 1;
+}
+
+.circle-1 {
+  width: 14%;
+  height: 14%;
+}
+.circle-2 {
+  width: 24%;
+  height: 24%;
+}
+.circle-3 {
+  width: 34%;
+  height: 34%;
+}
+.circle-4 {
+  width: 44%;
+  height: 44%;
+}
+.circle-5 {
+  width: 54%;
+  height: 54%;
+}
+.circle-6 {
+  width: 64%;
+  height: 64%;
+}
+.circle-7 {
+  width: 74%;
+  height: 74%;
+}
+.circle-8 {
+  width: 84%;
+  height: 84%;
+}
+.circle-9 {
+  width: 94%;
+  height: 94%;
+}
+
+.center-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgb(255, 26, 26);
+  box-shadow: currentcolor 0px 0px 20px;
+}
+
+@keyframes rotate-slow {
+  to {
+    transform: rotate(360deg);
   }
-  100% {
-    transform: translateY(3px);
+}
+.rotate-slow {
+  animation: rotate-slow 40s linear infinite;
+}
+.rotate-rev {
+  animation: rotate-slow 30s linear infinite reverse;
+}
+
+.loader-text-wrap {
+  position: absolute;
+  bottom: 12%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 20;
+}
+
+.loader-stage {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: #7d0000;
+  margin: 0;
+  transition: opacity 0.2s;
+}
+
+.loader-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: #d9d2c5;
+  letter-spacing: 0.2em;
+  margin: 0;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
+}
+
+.loader-stage.fade,
+.loader-title.fade {
+  opacity: 0;
+  transform: translateY(-5px);
+}
+@media (max-width: 720px) {
+  .loader-title {
+    font-size: 1.1rem;
+    letter-spacing: 0.15em;
+  }
+
+  .loader-stage {
+    font-size: 0.55rem;
+  }
+
+  .circles-wrapper {
+    transform: scale(0.9);
   }
 }
