@@ -562,15 +562,15 @@
      4. DANTE'S DESCENT PRELOADER (LOOPING LOGIC)
   ------------------------------------------------------------------------ */
   const hellStages = [
-    { stage: 'STAGE_01', title: 'CIRCLE I — LIMBO' },
-    { stage: 'STAGE_02', title: 'CIRCLE II — LUST' },
-    { stage: 'STAGE_03', title: 'CIRCLE III — GLUTTONY' },
-    { stage: 'STAGE_04', title: 'CIRCLE IV — GREED' },
-    { stage: 'STAGE_05', title: 'CIRCLE V — WRATH' },
-    { stage: 'STAGE_06', title: 'CIRCLE VI — HERESY' },
-    { stage: 'STAGE_07', title: 'CIRCLE VII — VIOLENCE' },
-    { stage: 'STAGE_08', title: 'CIRCLE VIII — FRAUD' },
-    { stage: 'STAGE_09', title: 'CIRCLE IX — TREACHERY' },
+    { stage: 'STAGE 1', title: 'CIRCLE I — LIMBO' },
+    { stage: 'STAGE 2', title: 'CIRCLE II — LUST' },
+    { stage: 'STAGE 3', title: 'CIRCLE III — GLUTTONY' },
+    { stage: 'STAGE 4', title: 'CIRCLE IV — GREED' },
+    { stage: 'STAGE 5', title: 'CIRCLE V — WRATH' },
+    { stage: 'STAGE 6', title: 'CIRCLE VI — HERESY' },
+    { stage: 'STAGE 7', title: 'CIRCLE VII — VIOLENCE' },
+    { stage: 'STAGE 8', title: 'CIRCLE VIII — FRAUD' },
+    { stage: 'STAGE 9', title: 'CIRCLE IX — TREACHERY' },
   ];
 
   const loaderTextStage = document.getElementById('loader-stage');
@@ -604,7 +604,7 @@
 
         const circleEl = document.querySelector(`.circle-${index + 1}`);
         if (circleEl) circleEl.classList.add('is-active');
-      }, 350);
+      }, 400);
     }
 
     loaderTextStage.textContent = hellStages[0].stage;
@@ -631,6 +631,6 @@
           applyStage(0);
         }
       }
-    }, 600);
+    }, 900);
   }
 })();
