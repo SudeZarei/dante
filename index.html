@@ -46,7 +46,10 @@
     </div>
     <!-- ambient background layer, sits behind everything, shared by all sections -->
     <div class="atmosphere" aria-hidden="true">
-      <div class="bg-photo"></div>
+      <!-- <div class="bg-photo"></div> -->
+      <video class="bg-video" autoplay loop muted playsinline>
+        <source src="assets/backgrounds/bg.webm" type="video/webm" />
+      </video>
       <div class="vignette"></div>
       <div class="grain"></div>
 
@@ -128,14 +131,17 @@
     <main id="scroll-track">
       <!-- SECTION 0 — HERO -->
       <section class="panel panel--hero" id="panel-0">
-        <div class="hero-layer hero-sky" style="background-image: url('assets/bg-sky.jpg')"></div>
+        <div
+          class="hero-layer hero-sky"
+          style="background-image: url('assets/hero/bg-sky.webp')"
+        ></div>
         <div
           class="hero-layer hero-clouds hero-clouds--left"
-          style="background-image: url('assets/clouds-left.png')"
+          style="background-image: url('assets/hero/clouds-left.webp')"
         ></div>
         <div
           class="hero-layer hero-clouds hero-clouds--right"
-          style="background-image: url('assets/clouds-right.png')"
+          style="background-image: url('assets/hero/clouds-right.webp')"
         ></div>
 
         <div class="hero-title-wrap">

@@ -22,8 +22,8 @@
   /* ------------------------------------------------------------------------
      1. RING DATA — edit me
      Put your real media in /assets/circles/ and update `media` below.
-     Supported media: .gif, .png, .jpg (rendered as <img>) or
-                       .mp4, .webm (rendered as an autoplaying <video>).
+     Supported media: .webm, .png, .jpg (rendered as <img>) or
+                       .mp4, webm (rendered as an autoplaying <video>).
      If a file is missing, the viewer shows a placeholder instead of
      breaking, so you can wire this up before the art exists.
   ------------------------------------------------------------------------ */
@@ -33,7 +33,7 @@
       title: 'Limbo',
       top: 0.0,
       bottom: 0.111,
-      media: 'assets/circles/ring-01.gif',
+      media: 'assets/circles/ring-01.webm',
       description: 'Placeholder description for Limbo. Edit RINGS in js/main.js.',
     },
     {
@@ -41,7 +41,7 @@
       title: 'Lust',
       top: 0.111,
       bottom: 0.234,
-      media: 'assets/circles/ring-02.gif',
+      media: 'assets/circles/ring-02.webm',
       description: 'Placeholder description for Lust. Edit RINGS in js/main.js.',
     },
     {
@@ -49,7 +49,7 @@
       title: 'Gluttony',
       top: 0.234,
       bottom: 0.335,
-      media: 'assets/circles/ring-03.gif',
+      media: 'assets/circles/ring-03.webm',
       description: 'Placeholder description for Gluttony. Edit RINGS in js/main.js.',
     },
     {
@@ -57,7 +57,7 @@
       title: 'Greed',
       top: 0.335,
       bottom: 0.452,
-      media: 'assets/circles/ring-04.gif',
+      media: 'assets/circles/ring-04.webm',
       description: 'Placeholder description for Greed. Edit RINGS in js/main.js.',
     },
     {
@@ -65,7 +65,7 @@
       title: 'Wrath',
       top: 0.452,
       bottom: 0.532,
-      media: 'assets/circles/ring-05.gif',
+      media: 'assets/circles/ring-05.webm',
       description: 'Placeholder description for Wrath. Edit RINGS in js/main.js.',
     },
     {
@@ -73,7 +73,7 @@
       title: 'Heresy',
       top: 0.532,
       bottom: 0.617,
-      media: 'assets/circles/ring-06.gif',
+      media: 'assets/circles/ring-06.webm',
       description: 'Placeholder description for Heresy. Edit RINGS in js/main.js.',
     },
     {
@@ -81,7 +81,7 @@
       title: 'Violence',
       top: 0.617,
       bottom: 0.71,
-      media: 'assets/circles/ring-07.gif',
+      media: 'assets/circles/ring-07.webm',
       description: 'Placeholder description for Violence. Edit RINGS in js/main.js.',
     },
     {
@@ -89,7 +89,7 @@
       title: 'Fraud',
       top: 0.71,
       bottom: 0.766,
-      media: 'assets/circles/ring-08.gif',
+      media: 'assets/circles/ring-08.webm',
       description: 'Placeholder description for Fraud — Malebolge. Edit RINGS in js/main.js.',
     },
     {
@@ -97,7 +97,7 @@
       title: 'Treachery',
       top: 0.766,
       bottom: 0.97,
-      media: 'assets/circles/ring-09.gif',
+      media: 'assets/circles/ring-09.webm',
       description: 'Placeholder description for Treachery. Edit RINGS in js/main.js.',
     },
   ];
