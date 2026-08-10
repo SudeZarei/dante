@@ -34,7 +34,8 @@
       top: 0.0,
       bottom: 0.111,
       media: 'assets/circles/ring-01.webm',
-      description: 'Placeholder description for Limbo. Edit RINGS in js/main.js.',
+      description:
+        'A dim and sorrowful place, without hope or torment. The souls of the virtuous who lived without faith dwell here beneath a quiet, eternal darkness, separated forever from the light of Heaven.',
     },
     {
       roman: 'II',
@@ -42,7 +43,8 @@
       top: 0.111,
       bottom: 0.234,
       media: 'assets/circles/ring-02.webm',
-      description: 'Placeholder description for Lust. Edit RINGS in js/main.js.',
+      description:
+        'A terrible storm sweeps endlessly through the darkness, carrying the souls of those ruled by desire. They are tossed and whirled without rest, as they once allowed themselves to be carried away by passion.',
     },
     {
       roman: 'III',
@@ -50,7 +52,8 @@
       top: 0.234,
       bottom: 0.335,
       media: 'assets/circles/ring-03.webm',
-      description: 'Placeholder description for Gluttony. Edit RINGS in js/main.js.',
+      description:
+        'Endless, filthy rain falls upon the souls who surrendered themselves to appetite. They lie in the cold mud beneath the watch of Cerberus, while the earth becomes a place of foulness and decay.',
     },
     {
       roman: 'IV',
@@ -58,7 +61,8 @@
       top: 0.335,
       bottom: 0.452,
       media: 'assets/circles/ring-04.webm',
-      description: 'Placeholder description for Greed. Edit RINGS in js/main.js.',
+      description:
+        'The miserly and the wasteful push enormous weights against one another through the darkness. They cry out and curse, forever trapped in the futile struggle over the wealth that once ruled their lives.',
     },
     {
       roman: 'V',
@@ -66,7 +70,8 @@
       top: 0.452,
       bottom: 0.532,
       media: 'assets/circles/ring-05.webm',
-      description: 'Placeholder description for Wrath. Edit RINGS in js/main.js.',
+      description:
+        'The wrathful tear and strike at one another upon the black waters of the Styx. Beneath them lie the sullen, buried in the muddy depths, choking upon the anger they kept hidden within themselves.',
     },
     {
       roman: 'VI',
@@ -74,7 +79,8 @@
       top: 0.532,
       bottom: 0.617,
       media: 'assets/circles/ring-06.webm',
-      description: 'Placeholder description for Heresy. Edit RINGS in js/main.js.',
+      description:
+        'Burning tombs stretch across a dark and fiery plain. Within them lie the souls who denied the life beyond death, enclosed forever in flaming graves beneath the walls of the City of Dis.',
     },
     {
       roman: 'VII',
@@ -82,7 +88,8 @@
       top: 0.617,
       bottom: 0.71,
       media: 'assets/circles/ring-07.webm',
-      description: 'Placeholder description for Violence. Edit RINGS in js/main.js.',
+      description:
+        'A realm of blood, fire, barren sand, and suffering. The violent against others are immersed in boiling blood; those who destroyed themselves become bleeding trees; and fire falls endlessly upon those who defied the divine order.',
     },
     {
       roman: 'VIII',
@@ -90,7 +97,8 @@
       top: 0.71,
       bottom: 0.766,
       media: 'assets/circles/ring-08.webm',
-      description: 'Placeholder description for Fraud — Malebolge. Edit RINGS in js/main.js.',
+      description:
+        'Malebolge is divided into ten dark ditches, each filled with a different punishment. Seducers, flatterers, thieves, hypocrites, false counselors, and other deceivers are twisted and tormented in forms as deceitful as their sins.',
     },
     {
       roman: 'IX',
@@ -98,7 +106,8 @@
       top: 0.766,
       bottom: 0.97,
       media: 'assets/circles/ring-09.webm',
-      description: 'Placeholder description for Treachery. Edit RINGS in js/main.js.',
+      description:
+        'A vast frozen lake, Cocytus, holds the traitors beneath its ice. The deeper the circle descends, the more completely the souls are frozen in silence. At the very center stands Lucifer, trapped in the ice, eternally devouring the greatest traitors.',
     },
   ];
   // `top` / `bottom` are fractions (0–1) of the IMAGE's height, not the
