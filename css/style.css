@@ -1360,12 +1360,14 @@ html[lang='fa'] .viewer__title {
   font-family: 'Kahroba', sans-serif;
   direction: rtl;
   text-align: right;
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
 }
 
 html[lang='fa'] .viewer__desc {
   font-family: 'Beirut', sans-serif;
   direction: rtl;
   text-align: right;
+  font-size: 1.25rem;
 }
 
 html[lang='fa'] .hero-title,

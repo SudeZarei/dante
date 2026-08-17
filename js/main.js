@@ -711,3 +711,35 @@
     }
   })();
 })();
+/* ------------------------------------------------------------------------
+     5. IMMEDIATE BACKGROUND MUSIC (FIRST INTERACTION)
+  ------------------------------------------------------------------------ */
+function unlockAudio(event) {
+  // Security check: Ignore script-dispatched fake events
+  if (!event.isTrusted) return;
+
+  // Use the existing audio functions already defined in main.js
+  window.initMusic();
+
+  // Only play if the user hasn't explicitly muted via localStorage
+  if (localStorage.getItem('musicEnabled') !== 'false') {
+    window.playMusic();
+  }
+
+  // Clean up: Remove listeners so this only ever runs once
+  interactionEvents.forEach((type) => {
+    document.removeEventListener(type, unlockAudio, { capture: true });
+  });
+}
+
+// Define the fastest genuine interaction events
+const interactionEvents = ['pointerdown', 'keydown'];
+
+// Attach to document, guaranteed to fire first (capture: true) and not block scrolling (passive: true)
+interactionEvents.forEach((type) => {
+  document.addEventListener(type, unlockAudio, {
+    capture: true,
+    passive: true,
+    once: true,
+  });
+});
