@@ -340,7 +340,6 @@ button {
   color: var(--ash);
 }
 .scroll-hint:hover {
-  /* color: var(--ember-glow); */
   color: #2a2117;
 }
 .scroll-hint svg {
@@ -357,86 +356,6 @@ button {
 }
 
 /* ---------- MAP ---------- */
-/* .panel--map {
-  justify-content: flex-start;
-  padding-top: 5vh;
-}
-.map-header {
-  margin-bottom: 1vh;
-}
-.map-title {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: clamp(1.8rem, 4vw, 2.8rem);
-  letter-spacing: 0.06em;
-  margin: 0;
-}
-.funnel-wrap {
-  position: relative;
-  width: min(90vw, 1000px);
-  flex: 1;
-  height: 100vh;
-}
-#funnel-svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-
-.funnel-band {
-  cursor: pointer;
-  transition:
-    filter 0.25s ease,
-    opacity 0.25s ease;
-}
-.funnel-band:hover {
-  filter: brightness(1.35);
-}
-.funnel-band__stroke {
-  pointer-events: none;
-}
-
-.funnel-labels {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-.ring-label {
-  position: absolute;
-  pointer-events: auto;
-  cursor: pointer;
-  transform: translateY(-50%);
-  font-family: var(--font-display);
-  font-size: 0.95rem;
-  letter-spacing: 0.05em;
-  color: var(--bone);
-  white-space: nowrap;
-  display: flex;
-  flex-direction: column;
-  line-height: 1.25;
-  transition: color 0.25s ease;
-}
-.ring-label small {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.2em;
-  color: var(--bone-dim);
-}
-.ring-label:hover,
-.ring-label:hover small {
-  color: var(--ember-glow);
-}
-.ring-label.align-left {
-  text-align: right;
-  align-items: flex-end;
-}
-.ring-label.align-right {
-  text-align: left;
-  align-items: flex-start;
-} */
-
 .panel--map {
   display: flex;
   align-items: center;
@@ -548,6 +467,7 @@ button {
   opacity: 1;
   transition: opacity 0.45s ease;
 }
+
 .viewer__media {
   position: absolute;
   inset: 0;
@@ -555,13 +475,28 @@ button {
   align-items: center;
   justify-content: center;
   background: #000;
+  overflow: hidden; /* Constrain wide horizontal boundaries */
 }
+
+/* Added panning UI interaction states */
+.viewer__media.is-pannable {
+  cursor: grab;
+  touch-action: none; /* Disable default device vertical scroll & swipe-back actions inside viewer */
+}
+
+.viewer__media.is-dragging {
+  cursor: grabbing;
+}
+
 .viewer__media img,
 .viewer__media video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  /* Default behaviors preventing native ghost drags - layout is securely managed via JS now instead of CSS object-fit limits */
+  display: block;
+  user-select: none;
+  -webkit-user-drag: none;
+  will-change: transform;
 }
+
 .viewer__media .placeholder {
   font-family: var(--font-mono);
   color: var(--bone-dim);
@@ -649,16 +584,6 @@ button {
     width: 40vw;
     opacity: 0.35;
   }
-  .funnel-wrap {
-    width: 98vw;
-    height: 75vh;
-  }
-  .ring-label {
-    font-size: 0.72rem;
-  }
-  .ring-label small {
-    font-size: 0.55rem;
-  }
   .viewer__panel {
     padding: 8vh 6vw 4vh;
   }
@@ -691,8 +616,6 @@ button {
    ATMOSPHERE BOOST — fog, broken ground with lava, grain
    (additive layer, does not touch anything above)
    ============================================================ */
-
-/* subtle film-grain texture over everything, for a less "flat digital" feel */
 .grain {
   position: absolute;
   inset: 0;
@@ -706,7 +629,6 @@ button {
 <rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
-/* stronger overall vignette + a deeper base gradient so edges feel heavier */
 .atmosphere {
   background:
     radial-gradient(ellipse at 50% 0%, rgba(94, 107, 120, 0.3), transparent 48%),
@@ -717,7 +639,6 @@ button {
     linear-gradient(180deg, #23262b 0%, var(--void-2) 16%, var(--void) 45%, var(--void-2) 100%);
 }
 
-/* ---------- fog banks, near the top of the viewport ---------- */
 .fog {
   position: absolute;
   left: -20%;
@@ -774,7 +695,6 @@ button {
   }
 }
 
-/* ---------- broken ground with lava veins, pinned to the bottom ---------- */
 .ground {
   position: absolute;
   left: 0;
@@ -863,12 +783,6 @@ button {
   }
 }
 
-/* ============================================================
-   EXACT-REFERENCE BACKGROUND — misty blue-grey sky, ruins,
-   fading down into the dark void and the lava-cracked ground.
-   (additive layer, nothing above is touched)
-   ============================================================ */
-
 .ruins {
   position: absolute;
   top: 0;
@@ -891,8 +805,6 @@ button {
   opacity: 0.7;
 }
 
-/* re-tune the fog banks toward the same cool blue-grey as the ruins,
-   instead of a neutral grey, so the whole sky band reads as one scene */
 .fog {
   background: radial-gradient(
     ellipse at center,
@@ -901,13 +813,6 @@ button {
     transparent 72%
   );
 }
-
-/* ============================================================
-   LAVA CANYON SCENE — jagged rock walls, branching lava veins,
-   a glowing river at the floor, and rolling fog over the peaks.
-   Replaces the earlier ruins concept per the new reference photo.
-   (still additive: nothing above this point is touched)
-   ============================================================ */
 
 .canyon {
   position: fixed;
@@ -961,7 +866,6 @@ button {
   animation: lava-pulse 3.2s ease-in-out infinite;
 }
 
-/* rising warm haze over the lava river, faded upward into the cool fog */
 .haze {
   position: fixed;
   left: 50%;
@@ -990,8 +894,6 @@ button {
   }
 }
 
-/* a fourth, lower fog bank so mist rolls across the mountain peaks too,
-   not just the open sky above them */
 .fog--4 {
   top: 20vh;
   height: 30vh;
@@ -1006,13 +908,6 @@ button {
     animation: none !important;
   }
 }
-
-/* ============================================================
-   REAL PHOTO BACKGROUND — uses the uploaded lava-canyon photo
-   directly instead of the hand-drawn SVG version. The SVG canyon
-   is kept in the markup (switched off below) in case you ever
-   want to go back to the vector version.
-   ============================================================ */
 
 .bg-photo {
   position: absolute;
@@ -1037,12 +932,10 @@ button {
   filter: saturate(1.08) contrast(1.05);
 }
 
-/* switch off the hand-drawn canyon now that the real photo is in place */
 .canyon {
   display: none;
 }
 
-/* fog now blends into the photo instead of sitting as flat grey shapes */
 .fog {
   mix-blend-mode: screen;
   opacity: 0.5;
@@ -1061,7 +954,6 @@ button {
   top: 30vh;
 }
 
-/* haze realigned to the lava river in the photo (slightly left of center, low) */
 .haze {
   width: 50vw;
   height: 40vh;
@@ -1074,9 +966,6 @@ button {
   );
 }
 
-/* scrim — darkens top and bottom so hero/credits text stays legible
-   over a busy photographic background; leaves the map's midsection
-   a little clearer since the funnel graphic has its own contrast */
 .scrim {
   position: absolute;
   inset: 0;
@@ -1091,12 +980,6 @@ button {
     rgba(5, 4, 3, 0.68) 100%
   );
 }
-
-/* ============================================================
-   TEXT LEGIBILITY OVER PHOTO — stronger shadows, slightly larger
-   sizes, warmer accent color so type reads clearly against the
-   rock / lava / fog photo instead of a flat dark background.
-   ============================================================ */
 
 .hero-title {
   font-size: clamp(2rem, 8vw, 6.6rem);
@@ -1159,14 +1042,6 @@ button {
     font-size: 0.8rem;
   }
 }
-
-/* ============================================================
-   MAP AS A REAL IMAGE — horizontal selectable regions
-   Replaces the SVG-drawn funnel. .funnel-wrap now holds the
-   actual artwork (object-fit: contain, so it's never stretched)
-   plus a transparent overlay of horizontal click/hover regions,
-   positioned in JS to match wherever the image actually renders.
-   ============================================================ */
 
 .map-image {
   position: absolute;
@@ -1243,9 +1118,7 @@ button {
     margin-top: 5vh;
   }
 }
-/* ============================================================
-   LOADING SCREEN (9 CIRCLES DESCENT - EXACT MATCH)
-   ============================================================ */
+
 #loader {
   position: fixed;
   inset: 0;
@@ -1401,11 +1274,6 @@ button {
   }
 }
 
-/* ============================================================
-   LANGUAGE TOGGLE & TRANSITIONS
-   ============================================================ */
-
-/* The fixed cinematic toggle button */
 .lang-toggle {
   position: fixed;
   top: 28px;
@@ -1444,14 +1312,12 @@ button {
   transition: color 0.3s ease;
 }
 
-/* Highlight active language */
 html[lang='en'] .lang-toggle__en,
 html[lang='fa'] .lang-toggle__fa {
   color: var(--ember-glow);
   font-weight: 500;
 }
 
-/* Text transitions for language switching */
 .is-switching-lang [data-i18n],
 .is-switching-lang [data-i18n-aria],
 .is-switching-lang .viewer__panel,
@@ -1476,9 +1342,6 @@ html[lang='fa'] .lang-toggle__fa {
   pointer-events: auto;
 }
 
-/* ============================================================
-   PERSIAN (RTL) SPECIFIC OVERRIDES
-   ============================================================ */
 html[lang='fa'] {
   --font-display: 'Amiri', serif;
   --font-body: 'Amiri', serif;
@@ -1491,10 +1354,6 @@ html[lang='fa'] .viewer__title {
   text-align: right;
 }
 
-/* 
-  Persian and Arabic connected script handles wide letter-spacing poorly. 
-  We must disable standard english tracking for clean font rendering. 
-*/
 html[lang='fa'] .hero-title,
 html[lang='fa'] .hero-desc,
 html[lang='fa'] .eyebrow,
@@ -1510,7 +1369,6 @@ html[lang='fa'] .lang-toggle {
   letter-spacing: normal !important;
 }
 
-/* Ensure proper composition and alignment on lists and viewers */
 html[lang='fa'] .credits-list {
   text-align: right;
   direction: rtl;
@@ -1521,22 +1379,15 @@ html[lang='fa'] .viewer__panel {
   direction: rtl;
 }
 
-/* Keep the interactive rail on the physical right to match map bounds */
 html[lang='fa'] .rail {
   right: 28px;
   left: auto;
 }
 
-/* Realign credits list labels */
 html[lang='fa'] .credits-list li {
   justify-content: space-between;
 }
 
-/* ============================================================
-   AMBIENT MUSIC TOGGLE UI
-   ============================================================ */
-
-/* Elegant cinematic button fixed to the bottom left */
 .sound-toggle {
   position: fixed;
   top: 60px;
