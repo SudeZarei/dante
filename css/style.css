@@ -1,7 +1,15 @@
 @font-face {
   font-family: 'Kahroba';
-  src: url('../assets/fonts/Kahroba-T-SC.ttf') format('truetype');
-  font-weight: 400;
+  src: url('../assets/fonts/Kahroba-EB-SC.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Beirut';
+  src: url('../assets/fonts/MJ_BEIRUT.TTF') format('truetype');
+  font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
@@ -1350,6 +1358,12 @@ html[lang='fa'] {
 
 html[lang='fa'] .viewer__title {
   font-family: 'Kahroba', sans-serif;
+  direction: rtl;
+  text-align: right;
+}
+
+html[lang='fa'] .viewer__desc {
+  font-family: 'Beirut', sans-serif;
   direction: rtl;
   text-align: right;
 }
