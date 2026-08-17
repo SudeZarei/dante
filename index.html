@@ -1,25 +1,35 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>The Descent — Art Portfolio</title>
-    <meta name="description" content="An art portfolio structured as a descent through circles." />
+    <title id="page-title"></title>
+    <meta id="meta-desc" name="description" content="" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Fonts: Cinzel, Cormorant Garamond, Jost -->
+    <!-- English Fonts: Cinzel, Cormorant Garamond, Jost -->
+    <!-- Persian Fonts: Amiri (Display/Body), Vazirmatn (UI/Mono) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&family=Jost:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&family=Jost:wght@400;500&family=Amiri:ital,wght@0,400;0,700;1,400&family=Vazirmatn:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="js/main.js"></script>
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
+    <!-- LANGUAGE SWITCHER -->
+    <button id="lang-toggle" class="lang-toggle" data-i18n-aria="navigation.toggleLang">
+      <span class="lang-toggle__en">EN</span>
+      <span class="lang-toggle__sep">|</span>
+      <span class="lang-toggle__fa">فارسی</span>
+    </button>
+
+    <!-- SOUND TOGGLE -->
+    <button id="sound-toggle" class="sound-toggle" aria-label="Toggle ambient sound">
+      SOUND OFF
+    </button>
+
     <!-- LOADING SCREEN (NINE CIRCLES) -->
     <div id="loader" class="loader dither-in" aria-hidden="true">
       <div class="vignette-overlay"></div>
@@ -40,42 +50,31 @@
       </div>
 
       <div class="loader-text-wrap">
-        <p class="loader-stage" id="loader-stage">STAGE_01</p>
-        <p class="loader-title" id="loader-title">CIRCLE I — LIMBO</p>
+        <p class="loader-stage" id="loader-stage"></p>
+        <p class="loader-title" id="loader-title"></p>
       </div>
     </div>
-    <!-- ambient background layer, sits behind everything, shared by all sections -->
+
     <div class="atmosphere" aria-hidden="true">
-      <!-- <div class="bg-photo"></div> -->
       <video class="bg-video" autoplay loop muted playsinline>
         <source src="assets/backgrounds/bg.webm" type="video/webm" />
       </video>
       <div class="vignette"></div>
       <div class="grain"></div>
 
-      <!-- lava canyon — two jagged rock walls, full height, converging toward
-       a lava river at the bottom, per the reference photo -->
       <svg class="canyon" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMax slice">
         <path
           class="canyon__rock"
-          d="M0,900 L0,250 L50,300 L90,220 L140,270 L180,190 L230,240 L270,160
-      L320,210 L360,140 L410,200 L450,260 L430,340 L470,300 L440,400 L480,380 L450,470 L500,450
-      L470,540 L520,520 L490,610 L540,600 L510,700 L560,690 L540,800 L600,850 L620,900 Z"
+          d="M0,900 L0,250 L50,300 L90,220 L140,270 L180,190 L230,240 L270,160 L320,210 L360,140 L410,200 L450,260 L430,340 L470,300 L440,400 L480,380 L450,470 L500,450 L470,540 L520,520 L490,610 L540,600 L510,700 L560,690 L540,800 L600,850 L620,900 Z"
         />
         <path
           class="canyon__rock"
-          d="M1440,900 L1440,250 L1390,300 L1350,220 L1300,270 L1260,190 L1210,240 L1170,160
-      L1120,210 L1080,140 L1030,200 L990,260 L1010,340 L970,300 L1000,400 L960,380 L990,470 L940,450
-      L970,540 L920,520 L950,610 L900,600 L930,700 L880,690 L900,800 L840,850 L820,900 Z"
+          d="M1440,900 L1440,250 L1390,300 L1350,220 L1300,270 L1260,190 L1210,240 L1170,160 L1120,210 L1080,140 L1030,200 L990,260 L1010,340 L970,300 L1000,400 L960,380 L990,470 L940,450 L970,540 L920,520 L950,610 L900,600 L930,700 L880,690 L900,800 L840,850 L820,900 Z"
         />
-
-        <!-- small distant peaks visible through the fog, between the two walls -->
         <path
           class="canyon__far-peaks"
           d="M480,430 L560,330 L610,400 L680,300 L740,390 L800,300 L860,400 L900,440 L900,900 L480,900 Z"
         />
-
-        <!-- lava veins climbing the left wall -->
         <path class="canyon__lava" d="M300,220 L280,270 L310,320 L275,380 L305,430 L265,490" />
         <path
           class="canyon__lava"
@@ -83,8 +82,6 @@
         />
         <path class="canyon__lava" d="M180,300 L165,360 L195,420 L160,480 L190,540 L155,610" />
         <path class="canyon__lava" d="M470,470 L505,530 L480,600 L515,670 L495,740 L530,900" />
-
-        <!-- lava veins climbing the right wall -->
         <path
           class="canyon__lava"
           d="M1140,220 L1160,270 L1130,320 L1165,380 L1135,430 L1175,490"
@@ -98,15 +95,10 @@
           d="M1260,300 L1275,360 L1245,420 L1280,480 L1250,540 L1285,610"
         />
         <path class="canyon__lava" d="M970,470 L935,530 L960,600 L925,670 L945,740 L910,900" />
-
-        <!-- the lava river at the canyon floor -->
         <path class="canyon__river" d="M560,900 L600,850 L680,880 L760,840 L840,880 L900,900" />
       </svg>
 
-      <!-- warm haze rising off the lava, blending into the cool fog above it -->
       <div class="haze"></div>
-
-      <!-- fog banks drifting over the peaks -->
       <div class="fog fog--1"></div>
       <div class="fog fog--2"></div>
       <div class="fog fog--3"></div>
@@ -115,17 +107,19 @@
       <div class="lava-glow lava-glow--left"></div>
       <div class="lava-glow lava-glow--right"></div>
       <div class="lava-glow lava-glow--center"></div>
-
       <div class="scrim"></div>
-
       <div class="embers" id="embers"></div>
     </div>
 
-    <!-- section progress rail — also doubles as click-to-jump navigation -->
-    <nav class="rail" aria-label="Section navigation">
-      <button class="rail__dot is-active" data-index="0" aria-label="Go to opening"></button>
-      <button class="rail__dot" data-index="1" aria-label="Go to the map"></button>
-      <button class="rail__dot" data-index="2" aria-label="Go to credits"></button>
+    <!-- section progress rail -->
+    <nav class="rail" id="main-nav">
+      <button
+        class="rail__dot is-active"
+        data-index="0"
+        data-i18n-aria="navigation.opening"
+      ></button>
+      <button class="rail__dot" data-index="1" data-i18n-aria="navigation.map"></button>
+      <button class="rail__dot" data-index="2" data-i18n-aria="navigation.credits"></button>
     </nav>
 
     <main id="scroll-track">
@@ -145,13 +139,13 @@
         ></div>
 
         <div class="hero-title-wrap">
-          <p class="eyebrow">Interactive Visualization</p>
-          <h1 class="hero-title">Dante’s Inferno</h1>
-          <p class="hero-desc desc-first">Lasciate ogni speranza, voi ch’entrate.</p>
-          <p class="hero-desc desc-second">Abandon all hope, you who enter here.</p>
+          <!-- <p class="eyebrow" data-i18n="hero.eyebrow"></p> -->
+          <h1 class="hero-title" data-i18n="hero.title"></h1>
+          <p class="hero-desc desc-first" data-i18n="hero.desc1"></p>
+          <p class="hero-desc desc-second" data-i18n="hero.desc2"></p>
 
-          <button class="scroll-hint" onclick="next()" aria-label="Scroll to the map">
-            <span>ENTER</span>
+          <button class="scroll-hint" onclick="next()" data-i18n-aria="navigation.map">
+            <span data-i18n="hero.enter"></span>
             <svg width="14" height="20" viewBox="0 0 14 20">
               <path
                 d="M7 0 V17 M1 11 L7 17 L13 11"
@@ -167,7 +161,7 @@
       <!-- SECTION 1 — MAP -->
       <section class="panel panel--map" id="panel-1">
         <div class="map-frame">
-          <img class="map-bg" src="assets/map/map.gif" alt="The nine circles, cross-section" />
+          <img class="map-bg" id="map-img-bg" src="assets/map/map.gif" alt="" />
 
           <svg
             class="map-svg"
@@ -175,9 +169,6 @@
             preserveAspectRatio="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <!-- 
-       path
-      -->
             <path
               class="map-area"
               data-index="0"
@@ -229,21 +220,30 @@
 
       <!-- SECTION 2 — CREDITS -->
       <section class="panel panel--credits" id="panel-2">
-        <p class="eyebrow">FIN</p>
-        <h2 class="credits-title">CREDITS</h2>
-        <ul class="credits-list" data-editable="credits-list">
-          <li><span>Art &amp; Direction</span><span>Kimia Borjian</span></li>
-          <li><span>Built With</span><span>HTML, CSS, JavaScript</span></li>
-          <li><span>Inspired By</span><span>Dante's Inferno</span></li>
+        <p class="eyebrow" data-i18n="credits.eyebrow"></p>
+        <h2 class="credits-title" data-i18n="credits.title"></h2>
+        <ul class="credits-list">
+          <li>
+            <span data-i18n="credits.artDirection"></span
+            ><span data-i18n="credits.artDirectionValue"></span>
+          </li>
+          <li>
+            <span data-i18n="credits.builtWith"></span
+            ><span data-i18n="credits.builtWithValue"></span>
+          </li>
+          <li>
+            <span data-i18n="credits.inspiredBy"></span
+            ><span data-i18n="credits.inspiredByValue"></span>
+          </li>
         </ul>
       </section>
     </main>
 
-    <!-- FULLSCREEN VIEWER — opens when a ring is clicked -->
+    <!-- FULLSCREEN VIEWER -->
     <div class="viewer" id="viewer" aria-hidden="true">
       <div class="viewer__media" id="viewer-media"></div>
       <div class="viewer__scrim"></div>
-      <button class="viewer__close" id="viewer-close" aria-label="Close">
+      <button class="viewer__close" id="viewer-close" data-i18n-aria="viewer.close">
         <svg width="22" height="22" viewBox="0 0 22 22">
           <path d="M2 2 L20 20 M20 2 L2 20" stroke="currentColor" stroke-width="2" />
         </svg>
@@ -255,6 +255,6 @@
       </div>
     </div>
 
-    <script src="js/main.js"></script>
+    <script src="js/main.js" defer></script>
   </body>
 </html>

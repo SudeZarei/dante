@@ -1,0 +1,174 @@
+{
+  "en": {
+    "site": {
+      "title": "Dante’s Inferno",
+      "description": "An art portfolio structured as a descent through circles."
+    },
+    "loader": {
+      "stage": "STAGE {num}",
+      "circle1": "CIRCLE I — LIMBO",
+      "circle2": "CIRCLE II — LUST",
+      "circle3": "CIRCLE III — GLUTTONY",
+      "circle4": "CIRCLE IV — GREED",
+      "circle5": "CIRCLE V — WRATH",
+      "circle6": "CIRCLE VI — HERESY",
+      "circle7": "CIRCLE VII — VIOLENCE",
+      "circle8": "CIRCLE VIII — FRAUD",
+      "circle9": "CIRCLE IX — TREACHERY"
+    },
+    "hero": {
+      "eyebrow": "Interactive Visualization",
+      "title": "Dante’s Inferno",
+      "desc1": "Lasciate ogni speranza, voi ch’entrate.",
+      "desc2": "Abandon all hope, you who enter here.",
+      "enter": "ENTER"
+    },
+    "navigation": {
+      "sectionNav": "Section navigation",
+      "opening": "Go to opening",
+      "map": "Go to the map",
+      "credits": "Go to credits",
+      "toggleLang": "Switch to Persian"
+    },
+    "credits": {
+      "eyebrow": "FIN",
+      "title": "CREDITS",
+      "artDirection": "Art & Direction",
+      "artDirectionValue": "Kimia Borjian",
+      "builtWith": "Built With",
+      "builtWithValue": "HTML, CSS, JavaScript",
+      "inspiredBy": "Inspired By",
+      "inspiredByValue": "Dante's Inferno"
+    },
+    "viewer": {
+      "circle": "CIRCLE {roman}",
+      "close": "Close",
+      "mediaNotFound": "MEDIA NOT FOUND",
+      "mediaInstruction": "Drop a gif or mp4 at this path,<br>or update it in js/main.js → RINGS"
+    },
+    "rings": {
+      "I": {
+        "title": "Limbo",
+        "description": "A dim and sorrowful place, without hope or torment. The souls of the virtuous who lived without faith dwell here beneath a quiet, eternal darkness, separated forever from the light of Heaven."
+      },
+      "II": {
+        "title": "Lust",
+        "description": "A terrible storm sweeps endlessly through the darkness, carrying the souls of those ruled by desire. They are tossed and whirled without rest, as they once allowed themselves to be carried away by passion."
+      },
+      "III": {
+        "title": "Gluttony",
+        "description": "Endless, filthy rain falls upon the souls who surrendered themselves to appetite. They lie in the cold mud beneath the watch of Cerberus, while the earth becomes a place of foulness and decay."
+      },
+      "IV": {
+        "title": "Greed",
+        "description": "The miserly and the wasteful push enormous weights against one another through the darkness. They cry out and curse, forever trapped in the futile struggle over the wealth that once ruled their lives."
+      },
+      "V": {
+        "title": "Wrath",
+        "description": "The wrathful tear and strike at one another upon the black waters of the Styx. Beneath them lie the sullen, buried in the muddy depths, choking upon the anger they kept hidden within themselves."
+      },
+      "VI": {
+        "title": "Heresy",
+        "description": "Burning tombs stretch across a dark and fiery plain. Within them lie the souls who denied the life beyond death, enclosed forever in flaming graves beneath the walls of the City of Dis."
+      },
+      "VII": {
+        "title": "Violence",
+        "description": "A realm of blood, fire, barren sand, and suffering. The violent against others are immersed in boiling blood; those who destroyed themselves become bleeding trees; and fire falls endlessly upon those who defied the divine order."
+      },
+      "VIII": {
+        "title": "Fraud",
+        "description": "Malebolge is divided into ten dark ditches, each filled with a different punishment. Seducers, flatterers, thieves, hypocrites, false counselors, and other deceivers are twisted and tormented in forms as deceitful as their sins."
+      },
+      "IX": {
+        "title": "Treachery",
+        "description": "A vast frozen lake, Cocytus, holds the traitors beneath its ice. The deeper the circle descends, the more completely the souls are frozen in silence. At the very center stands Lucifer, trapped in the ice, eternally devouring the greatest traitors."
+      }
+    }
+  },
+  "fa": {
+    "site": {
+      "title": "دوزخ دانته",
+      "description": "یک پورتفولیوی هنری ساختاریافته به شکل نزولی در میان حلقه‌ها."
+    },
+    "loader": {
+      "stage": "مرحله {num}",
+      "circle1": "حلقه ۱ — برزخ",
+      "circle2": "حلقه ۲ — شهوت",
+      "circle3": "حلقه ۳ — شکم‌پرستی",
+      "circle4": "حلقه ۴ — طمع",
+      "circle5": "حلقه ۵ — خشم",
+      "circle6": "حلقه ۶ — کفر",
+      "circle7": "حلقه ۷ — خشونت",
+      "circle8": "حلقه ۸ — فریب",
+      "circle9": "حلقه ۹ — خیانت"
+    },
+    "hero": {
+      "eyebrow": "تجسم تعاملی",
+      "title": "دوزخ دانته",
+      "desc1": "Lasciate ogni speranza, voi ch’entrate.",
+      "desc2": "ای که وارد می‌شوی، دست از هر امیدی بشوی.",
+      "enter": "ورود"
+    },
+    "navigation": {
+      "sectionNav": "ناوبری بخش‌ها",
+      "opening": "رفتن به آغاز",
+      "map": "رفتن به نقشه",
+      "credits": "رفتن به عوامل",
+      "toggleLang": "تغییر به انگلیسی"
+    },
+    "credits": {
+      "eyebrow": "پایان",
+      "title": "عوامل",
+      "artDirection": "مدیریت هنری",
+      "artDirectionValue": "کیمیا برجیان",
+      "builtWith": "ساخته شده با",
+      "builtWithValue": "HTML, CSS, JavaScript",
+      "inspiredBy": "با الهام از",
+      "inspiredByValue": "دوزخ دانته"
+    },
+    "viewer": {
+      "circle": "حلقه {roman}",
+      "close": "بستن",
+      "mediaNotFound": "رسانه یافت نشد",
+      "mediaInstruction": "یک فایل gif یا mp4 در این مسیر قرار دهید،<br>یا آن را در js/main.js بروزرسانی کنید"
+    },
+    "rings": {
+      "I": {
+        "title": "برزخ",
+        "description": "مکانی تاریک و اندوهبار، بدون امید یا عذاب. ارواح پرهیزکارانی که بدون ایمان زیسته‌اند، در زیر تاریکیِ آرام و ابدی در اینجا ساکنند و برای همیشه از نور بهشت جدا مانده‌اند."
+      },
+      "II": {
+        "title": "شهوت",
+        "description": "طوفانی سهمگین و بی‌امان در تاریکی می‌وزد و ارواح کسانی را که تسلیم هوس بوده‌اند، با خود می‌برد. آن‌ها بی‌وقفه در هم می‌پیچند و پرتاب می‌شوند، همان‌طور که روزگاری اجازه دادند شهوت آن‌ها را با خود ببرد."
+      },
+      "III": {
+        "title": "شکم‌پرستی",
+        "description": "بارانی کثیف و بی‌پایان بر روح‌هایی می‌بارد که تسلیم اشتهای خویش شدند. آن‌ها در زیر نگاه سربروس در گل‌ولای سرد دراز کشیده‌اند، در حالی که زمین به مکانی از پلیدی و تباهی تبدیل شده است."
+      },
+      "IV": {
+        "title": "طمع",
+        "description": "خسیسان و اسراف‌کاران وزنه‌های عظیمی را در تاریکی به سمت یکدیگر هل می‌دهند. آن‌ها فریاد می‌زنند و نفرین می‌کنند، که برای همیشه در تقلای بیهوده بر سر ثروتی که روزگاری بر زندگی‌شان مسلط بود، گرفتار شده‌اند."
+      },
+      "V": {
+        "title": "خشم",
+        "description": "خشمگینان بر روی آب‌های سیاه استوکس به یکدیگر چنگ می‌زنند و ضربه می‌کوبند. در زیر آن‌ها عبوسان قرار دارند که در اعماق گل‌آلود دفن شده‌اند و با خشمی که درون خود پنهان کرده بودند، خفه می‌شوند."
+      },
+      "VI": {
+        "title": "کفر",
+        "description": "مقبره‌های سوزان در دشتی تاریک و آتشین گسترده شده‌اند. در درون آن‌ها ارواح کسانی قرار دارند که زندگی پس از مرگ را انکار کردند؛ آن‌ها برای همیشه در گورهای شعله‌ور زیر دیوارهای شهر دیس محبوس شده‌اند."
+      },
+      "VII": {
+        "title": "خشونت",
+        "description": "قلمرویی از خون، آتش، شن‌های بایر و رنج. خشونت‌طلبان علیه دیگران در خون جوشان غوطه‌ورند؛ کسانی که خود را نابود کردند به درختانی خون‌چکان تبدیل شده‌اند؛ و آتش بی‌وقفه بر کسانی می‌بارد که از نظم الهی سرپیچی کردند."
+      },
+      "VIII": {
+        "title": "فریب",
+        "description": "ماله‌بولجه به ده خندق تاریک تقسیم شده است که هر کدام با عذابی متفاوت پر شده‌اند. اغواگران، چاپلوسان، دزدان، ریاکاران، مشاوران دروغین و دیگر فریبکاران در اشکالی به همان اندازه فریبکارانه که گناهانشان بود، پیچ و تاب می‌خورند و شکنجه می‌شوند."
+      },
+      "IX": {
+        "title": "خیانت",
+        "description": "دریاچه‌ای وسیع و یخ‌زده به نام کوسیتوس، خائنان را در زیر یخ‌های خود نگه می‌دارد. هر چه حلقه عمیق‌تر می‌شود، ارواح بیشتر در سکوت یخ می‌زنند. در مرکز مطلق، لوسیفر در یخ گرفتار است و بزرگترین خائنان را برای همیشه می‌بلعد."
+      }
+    }
+  }
+}

@@ -1,262 +1,264 @@
-/* ==========================================================================
-   THE DESCENT — main.js
-   --------------------------------------------------------------------------
-   This file controls three things:
-     1. RINGS         — the data for each part of the map: title, the
-                         vertical slice of map.png each ring occupies
-                         (top/bottom, as fractions of the image height),
-                         and what to show in the fullscreen viewer.
-     2. Map builder    — lays a transparent, clickable region over each
-                          horizontal band of the real map image, positioned
-                          to match wherever the image is actually rendered
-                          (it uses object-fit: contain, so it can be
-                          letterboxed depending on screen size).
-     3. Page control   — locks scrolling so the site always snaps fully
-                         onto one of the 3 sections (hero / map / credits),
-                         plus the fullscreen viewer that opens on ring click.
-   ========================================================================== */
-
 (() => {
   'use strict';
 
   /* ------------------------------------------------------------------------
-     1. RING DATA — edit me
-     Put your real media in /assets/circles/ and update `media` below.
-     Supported media: .webm, .png, .jpg (rendered as <img>) or
-                       .mp4, webm (rendered as an autoplaying <video>).
-     If a file is missing, the viewer shows a placeholder instead of
-     breaking, so you can wire this up before the art exists.
+     0a. TRANSLATION & LANGUAGE TOGGLE SYSTEM
+  ------------------------------------------------------------------------ */
+  let translations = {};
+  let currentLang = localStorage.getItem('lang') || 'en';
+  let currentRing = null; // Track open viewer data to refresh it smoothly
+
+  window.t = function (key, placeholders = {}) {
+    const keys = key.split('.');
+    let result = translations[currentLang];
+    for (const k of keys) {
+      if (result && result[k] !== undefined) {
+        result = result[k];
+      } else {
+        return key;
+      }
+    }
+    if (typeof result === 'string') {
+      for (const [k, v] of Object.entries(placeholders)) {
+        result = result.replace(new RegExp(`{${k}}`, 'g'), v);
+      }
+    }
+    return result;
+  };
+
+  function updateDOM() {
+    document.querySelectorAll('[data-i18n]').forEach((el) => {
+      const key = el.getAttribute('data-i18n');
+      el.innerHTML = window.t(key);
+    });
+
+    document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
+      const key = el.getAttribute('data-i18n-aria');
+      el.setAttribute('aria-label', window.t(key));
+    });
+
+    document.getElementById('page-title').textContent = window.t('site.title');
+    document.getElementById('meta-desc').setAttribute('content', window.t('site.description'));
+    document
+      .getElementById('main-nav')
+      .setAttribute('aria-label', window.t('navigation.sectionNav'));
+
+    if (viewerOpen && currentRing) {
+      document.getElementById('viewer-eyebrow').textContent = window.t('viewer.circle', {
+        roman: currentRing.roman,
+      });
+      document.getElementById('viewer-title').textContent = window.t(currentRing.titleKey);
+      document.getElementById('viewer-desc').textContent = window.t(currentRing.descriptionKey);
+    }
+  }
+
+  window.setLanguage = function (lang, save = true, transition = true) {
+    if (!translations[lang]) lang = 'en';
+    if (currentLang === lang && transition) return;
+
+    currentLang = lang;
+    if (save) localStorage.setItem('lang', lang);
+
+    const executeSwitch = () => {
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang === 'fa' ? 'rtl' : 'ltr';
+      updateDOM();
+      if (transition) document.body.classList.remove('is-switching-lang');
+    };
+
+    if (transition) {
+      document.body.classList.add('is-switching-lang');
+      setTimeout(executeSwitch, 250);
+    } else {
+      executeSwitch();
+    }
+  };
+
+  async function initTranslations() {
+    try {
+      const res = await fetch('assets/i18n/translations.json');
+      translations = await res.json();
+      setLanguage(currentLang, false, false);
+
+      const langToggle = document.getElementById('lang-toggle');
+      if (langToggle) {
+        langToggle.addEventListener('click', () => {
+          const newLang = currentLang === 'en' ? 'fa' : 'en';
+          setLanguage(newLang, true, true);
+        });
+      }
+    } catch (e) {
+      console.error('Failed to load translations', e);
+    }
+  }
+
+  /* ------------------------------------------------------------------------
+     0b. AMBIENT AUDIO SYSTEM
+  ------------------------------------------------------------------------ */
+  let bgAudio = null;
+  // Default to true if not previously set by the user
+  let musicEnabled = localStorage.getItem('musicEnabled') !== 'false';
+  let musicInitialized = false;
+
+  const VOL_DEFAULT = 0.35;
+  const VOL_DUCK = 0.15;
+
+  window.initMusic = function () {
+    if (musicInitialized) return;
+    musicInitialized = true;
+
+    // Create the Audio object lazily
+    bgAudio = new Audio('assets/audio/infernno.mp3');
+    bgAudio.loop = true;
+    bgAudio.volume = VOL_DEFAULT;
+  };
+
+  window.playMusic = function () {
+    if (!bgAudio) window.initMusic();
+    if (!musicEnabled || !bgAudio) return;
+
+    const playPromise = bgAudio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          // Double check state in case it was toggled rapidly during load
+          if (!musicEnabled) bgAudio.pause();
+          updateSoundUI();
+        })
+        .catch((err) => {
+          console.warn('Audio autoplay blocked by browser:', err);
+          musicEnabled = false; // Fail silently, update UI to reflect blocked state
+          updateSoundUI();
+        });
+    }
+  };
+
+  window.pauseMusic = function () {
+    if (bgAudio) bgAudio.pause();
+    updateSoundUI();
+  };
+
+  window.toggleMusic = function () {
+    if (!musicInitialized) window.initMusic();
+
+    musicEnabled = !musicEnabled;
+    localStorage.setItem('musicEnabled', musicEnabled);
+
+    if (musicEnabled) {
+      window.playMusic();
+    } else {
+      window.pauseMusic();
+    }
+  };
+
+  window.setMusicVolume = function (targetVol, duration = 1.5) {
+    if (!bgAudio) return;
+    // Uses existing GSAP engine for smooth, artifact-free volume fades
+    gsap.to(bgAudio, { volume: targetVol, duration: duration, ease: 'power2.inOut' });
+  };
+
+  function updateSoundUI() {
+    const btn = document.getElementById('sound-toggle');
+    if (btn) {
+      btn.textContent = musicEnabled ? 'SOUND ON' : 'SOUND OFF';
+    }
+  }
+
+  // Setup sound UI default state & listeners immediately
+  updateSoundUI();
+  document.getElementById('sound-toggle')?.addEventListener('click', window.toggleMusic);
+
+  /* ------------------------------------------------------------------------
+     1. RING DATA
   ------------------------------------------------------------------------ */
   const RINGS = [
     {
       roman: 'I',
-      title: 'Limbo',
+      titleKey: 'rings.I.title',
       top: 0.0,
       bottom: 0.111,
       media: 'assets/circles/ring-01.webm',
-      description:
-        'A dim and sorrowful place, without hope or torment. The souls of the virtuous who lived without faith dwell here beneath a quiet, eternal darkness, separated forever from the light of Heaven.',
+      descriptionKey: 'rings.I.description',
     },
     {
       roman: 'II',
-      title: 'Lust',
+      titleKey: 'rings.II.title',
       top: 0.111,
       bottom: 0.234,
       media: 'assets/circles/ring-02.webm',
-      description:
-        'A terrible storm sweeps endlessly through the darkness, carrying the souls of those ruled by desire. They are tossed and whirled without rest, as they once allowed themselves to be carried away by passion.',
+      descriptionKey: 'rings.II.description',
     },
     {
       roman: 'III',
-      title: 'Gluttony',
+      titleKey: 'rings.III.title',
       top: 0.234,
       bottom: 0.335,
       media: 'assets/circles/ring-03.webm',
-      description:
-        'Endless, filthy rain falls upon the souls who surrendered themselves to appetite. They lie in the cold mud beneath the watch of Cerberus, while the earth becomes a place of foulness and decay.',
+      descriptionKey: 'rings.III.description',
     },
     {
       roman: 'IV',
-      title: 'Greed',
+      titleKey: 'rings.IV.title',
       top: 0.335,
       bottom: 0.452,
       media: 'assets/circles/ring-04.webm',
-      description:
-        'The miserly and the wasteful push enormous weights against one another through the darkness. They cry out and curse, forever trapped in the futile struggle over the wealth that once ruled their lives.',
+      descriptionKey: 'rings.IV.description',
     },
     {
       roman: 'V',
-      title: 'Wrath',
+      titleKey: 'rings.V.title',
       top: 0.452,
       bottom: 0.532,
       media: 'assets/circles/ring-05.webm',
-      description:
-        'The wrathful tear and strike at one another upon the black waters of the Styx. Beneath them lie the sullen, buried in the muddy depths, choking upon the anger they kept hidden within themselves.',
+      descriptionKey: 'rings.V.description',
     },
     {
       roman: 'VI',
-      title: 'Heresy',
+      titleKey: 'rings.VI.title',
       top: 0.532,
       bottom: 0.617,
       media: 'assets/circles/ring-06.webm',
-      description:
-        'Burning tombs stretch across a dark and fiery plain. Within them lie the souls who denied the life beyond death, enclosed forever in flaming graves beneath the walls of the City of Dis.',
+      descriptionKey: 'rings.VI.description',
     },
     {
       roman: 'VII',
-      title: 'Violence',
+      titleKey: 'rings.VII.title',
       top: 0.617,
       bottom: 0.71,
       media: 'assets/circles/ring-07.webm',
-      description:
-        'A realm of blood, fire, barren sand, and suffering. The violent against others are immersed in boiling blood; those who destroyed themselves become bleeding trees; and fire falls endlessly upon those who defied the divine order.',
+      descriptionKey: 'rings.VII.description',
     },
     {
       roman: 'VIII',
-      title: 'Fraud',
+      titleKey: 'rings.VIII.title',
       top: 0.71,
       bottom: 0.766,
       media: 'assets/circles/ring-08.webm',
-      description:
-        'Malebolge is divided into ten dark ditches, each filled with a different punishment. Seducers, flatterers, thieves, hypocrites, false counselors, and other deceivers are twisted and tormented in forms as deceitful as their sins.',
+      descriptionKey: 'rings.VIII.description',
     },
     {
       roman: 'IX',
-      title: 'Treachery',
+      titleKey: 'rings.IX.title',
       top: 0.766,
       bottom: 0.97,
       media: 'assets/circles/ring-09.webm',
-      description:
-        'A vast frozen lake, Cocytus, holds the traitors beneath its ice. The deeper the circle descends, the more completely the souls are frozen in silence. At the very center stands Lucifer, trapped in the ice, eternally devouring the greatest traitors.',
+      descriptionKey: 'rings.IX.description',
     },
   ];
-  // `top` / `bottom` are fractions (0–1) of the IMAGE's height, not the
-  // screen — they mark where each ring's band sits inside map.png.
-  // These were estimated from the artwork; nudge them in small steps
-  // (e.g. 0.532 -> 0.54) and reload if a boundary looks off against
-  // your actual image.
 
   /* ------------------------------------------------------------------------
-     HOVER SHAPE — this is what makes each region "fit" the funnel instead
-     of being a full-width rectangle. The funnel is widest at the top and
-     narrows to a point at the bottom, so each hover region is clipped into
-     a trapezoid that tapers the same way.
-
-     TWO PLACES TO ADJUST IT:
-
-     A) Quick, whole-funnel adjustment — change these two numbers.
-        Each is "how far the funnel edge sits from center", as a percent
-        of the image width, at the very top and very bottom.
+     2. MAP INTERACTION
   ------------------------------------------------------------------------ */
-  const FUNNEL_TOP_HALF_PCT = 31; // top rim: 50% ± this = how wide the top is
-  const FUNNEL_BOTTOM_HALF_PCT = 4; // bottom tip: 50% ± this = how wide the point is
-
-  function taperHalfWidthPct(fraction) {
-    return FUNNEL_TOP_HALF_PCT + (FUNNEL_BOTTOM_HALF_PCT - FUNNEL_TOP_HALF_PCT) * fraction;
-  }
-
-  /* B) Precise, per-ring adjustment — if one specific ring's hover still
-        doesn't match the art (e.g. the gold pile bulges out further than
-        the taper predicts), give that ring its own `shape` object here,
-        with each value as a percent (0–100) of the image width:
-          shape: { topLeft: 20, topRight: 80, bottomLeft: 24, bottomRight: 76 }
-        Any ring without a `shape` just uses the taper formula above. */
-  const RING_SHAPES = {
-    III: { topLeft: 18, topRight: 82, bottomLeft: 22, bottomRight: 78 },
-    III: { topLeft: 18, topRight: 82, bottomLeft: 22, bottomRight: 78 },
-  };
-
-  function shapeFor(ring) {
-    if (RING_SHAPES[ring.roman]) return RING_SHAPES[ring.roman];
-    const topHalf = taperHalfWidthPct(ring.top);
-    const bottomHalf = taperHalfWidthPct(ring.bottom);
-    return {
-      topLeft: 50 - topHalf,
-      topRight: 50 + topHalf,
-      bottomLeft: 50 - bottomHalf,
-      bottomRight: 50 + bottomHalf,
-    };
-  }
-
-  /* ------------------------------------------------------------------------
-     2. MAP REGION BUILDER
-     The map is now a real image (assets/map/map.png). Because the image
-     has its own aspect ratio and uses object-fit:contain, it may be
-     letterboxed inside .funnel-wrap — so on every build/resize we work
-     out exactly where the image is actually drawn, then position each
-     ring's clickable strip against that, not against the wrapper.
-  ------------------------------------------------------------------------ */
-  // const mapImage = document.getElementById('map-image');
-  // const regionsLayer = document.getElementById('map-regions');
-  // const funnelWrap = document.querySelector('.funnel-wrap');
-
-  // function getRenderedImageRect() {
-  //   const wrapRect = funnelWrap.getBoundingClientRect();
-  //   const naturalRatio = (mapImage.naturalWidth || 2760) / (mapImage.naturalHeight || 1504);
-  //   const boxRatio = wrapRect.width / wrapRect.height;
-
-  //   let renderW, renderH, offsetX, offsetY;
-  //   if (naturalRatio > boxRatio) {
-  //     // image is relatively wider than the box -> letterboxed top/bottom
-  //     renderW = wrapRect.width;
-  //     renderH = renderW / naturalRatio;
-  //     offsetX = 0;
-  //     offsetY = (wrapRect.height - renderH) / 2;
-  //   } else {
-  //     // image is relatively taller than the box -> letterboxed left/right
-  //     renderH = wrapRect.height;
-  //     renderW = renderH * naturalRatio;
-  //     offsetY = 0;
-  //     offsetX = (wrapRect.width - renderW) / 2;
-  //   }
-  //   return { renderW, renderH, offsetX, offsetY };
-  // }
-
-  // function buildMapRegions() {
-  //   regionsLayer.innerHTML = '';
-  //   const { renderW, renderH, offsetX, offsetY } = getRenderedImageRect();
-
-  //   RINGS.forEach((ring) => {
-  //     const region = document.createElement('div');
-  //     region.className = 'map-region';
-  //     region.style.left = `${offsetX}px`;
-  //     region.style.width = `${renderW}px`;
-  //     region.style.top = `${offsetY + ring.top * renderH}px`;
-  //     region.style.height = `${(ring.bottom - ring.top) * renderH}px`;
-  //     region.setAttribute('tabindex', '0');
-  //     region.setAttribute('role', 'button');
-  //     region.setAttribute('aria-label', `Open ${ring.title}`);
-
-  //     const shape = shapeFor(ring);
-  //     region.style.clipPath = `polygon(
-  //       ${shape.topLeft}% 0%, ${shape.topRight}% 0%,
-  //       ${shape.bottomRight}% 100%, ${shape.bottomLeft}% 100%)`;
-
-  //     const tag = document.createElement('span');
-  //     tag.className = 'map-region__tag';
-  //     tag.textContent = `CIRCLE ${ring.roman} — ${ring.title.toUpperCase()}`;
-  //     // keep the tag inside the trapezoid at both its top and bottom edge
-  //     const safeLeftPct = Math.max(shape.topLeft, shape.bottomLeft);
-  //     tag.style.left = `calc(${safeLeftPct}% + 10px)`;
-  //     region.appendChild(tag);
-
-  //     region.addEventListener('click', () => openViewer(ring));
-  //     region.addEventListener('keydown', (e) => {
-  //       if (e.key === 'Enter' || e.key === ' ') {
-  //         e.preventDefault();
-  //         openViewer(ring);
-  //       }
-  //     });
-
-  //     regionsLayer.appendChild(region);
-  //   });
-  // }
-
-  // let resizeTimer;
-  // window.addEventListener('resize', () => {
-  //   clearTimeout(resizeTimer);
-  //   resizeTimer = setTimeout(buildMapRegions, 120);
-  // });
-
-  // if (mapImage.complete) {
-  //   buildMapRegions();
-  // } else {
-  //   mapImage.addEventListener('load', buildMapRegions);
-  // }
   const mapAreas = document.querySelectorAll('.map-area');
-
   mapAreas.forEach((area) => {
     area.setAttribute('tabindex', '0');
     area.setAttribute('role', 'button');
-
     const index = parseInt(area.getAttribute('data-index'), 10);
-
     const activate = () => {
       if (RINGS[index]) {
         openViewer(RINGS[index]);
       }
     };
-
     area.addEventListener('click', activate);
     area.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -265,6 +267,7 @@
       }
     });
   });
+
   /* ------------------------------------------------------------------------
      3a. FULLSCREEN VIEWER
   ------------------------------------------------------------------------ */
@@ -274,7 +277,6 @@
   const viewerTitle = document.getElementById('viewer-title');
   const viewerDesc = document.getElementById('viewer-desc');
   const viewerClose = document.getElementById('viewer-close');
-
   let viewerOpen = false;
 
   function isVideo(path) {
@@ -282,9 +284,11 @@
   }
 
   function openViewer(ring) {
-    viewerEyebrow.textContent = `CIRCLE ${ring.roman}`;
-    viewerTitle.textContent = ring.title;
-    viewerDesc.textContent = ring.description;
+    currentRing = ring;
+
+    viewerEyebrow.textContent = window.t('viewer.circle', { roman: ring.roman });
+    viewerTitle.textContent = window.t(ring.titleKey);
+    viewerDesc.textContent = window.t(ring.descriptionKey);
 
     viewerMedia.innerHTML = '';
     if (ring.media) {
@@ -300,7 +304,7 @@
       } else {
         const img = document.createElement('img');
         img.src = ring.media;
-        img.alt = ring.title;
+        img.alt = window.t(ring.titleKey);
         img.onerror = () => showPlaceholder(ring.media);
         viewerMedia.appendChild(img);
       }
@@ -308,19 +312,35 @@
       showPlaceholder(null);
     }
 
+    // Duck the background music volume while viewing rings
+    // window.setMusicVolume(VOL_DUCK, 1.2);
+
+    document.querySelector('.lang-toggle').classList.remove('is-visible');
+    document.querySelector('.sound-toggle').classList.remove('is-visible');
+
     viewer.classList.add('is-open');
     viewer.setAttribute('aria-hidden', 'false');
     viewerOpen = true;
   }
 
   function showPlaceholder(path) {
-    viewerMedia.innerHTML = `<p class="placeholder">MEDIA NOT FOUND${path ? `<br>${path}` : ''}<br><br>Drop a gif or mp4 at this path,<br>or update it in js/main.js → RINGS</p>`;
+    const notFound = window.t('viewer.mediaNotFound');
+    const instruction = window.t('viewer.mediaInstruction');
+    viewerMedia.innerHTML = `<p class="placeholder">${notFound}${path ? `<br>${path}` : ''}<br><br>${instruction}</p>`;
   }
 
   function closeViewer() {
     viewer.classList.remove('is-open');
     viewer.setAttribute('aria-hidden', 'true');
     viewerOpen = false;
+    currentRing = null;
+
+    // Restore the background music volume when closing
+    // window.setMusicVolume(VOL_DEFAULT, 1.2);
+
+    document.querySelector('.lang-toggle').classList.add('is-visible');
+    document.querySelector('.sound-toggle').classList.add('is-visible');
+
     setTimeout(() => {
       viewerMedia.innerHTML = '';
     }, 450);
@@ -330,89 +350,8 @@
   viewer.querySelector('.viewer__scrim').addEventListener('click', closeViewer);
 
   /* ------------------------------------------------------------------------
-     3b. PAGE CONTROL — locked, one-section-at-a-time scrolling
+     3b. PAGE CONTROL
   ------------------------------------------------------------------------ */
-  // const track = document.getElementById('scroll-track');
-  // const panels = document.querySelectorAll('.panel');
-  // const railDots = document.querySelectorAll('.rail__dot');
-  // const totalPanels = panels.length;
-
-  // let currentIndex = 0;
-  // let isAnimating = false;
-  // const ANIMATION_MS = 720;
-  // const WHEEL_THRESHOLD = 12;
-
-  // function goTo(nextIndex) {
-  //   nextIndex = Math.max(0, Math.min(totalPanels - 1, nextIndex));
-  //   if (nextIndex === currentIndex || isAnimating) return;
-  //   currentIndex = nextIndex;
-  //   track.style.transform = `translateY(-${currentIndex * 100}vh)`;
-  //   railDots.forEach((dot, i) => dot.classList.toggle('is-active', i === currentIndex));
-  //   isAnimating = true;
-  //   setTimeout(() => {
-  //     isAnimating = false;
-  //   }, ANIMATION_MS);
-  // }
-
-  // function next() {
-  //   goTo(currentIndex + 1);
-  // }
-  // function prev() {
-  //   goTo(currentIndex - 1);
-  // }
-
-  // // Mouse wheel / trackpad
-  // window.addEventListener(
-  //   'wheel',
-  //   (e) => {
-  //     if (viewerOpen) return; // let the viewer own scroll/close instead
-  //     e.preventDefault();
-  //     if (isAnimating) return;
-  //     if (e.deltaY > WHEEL_THRESHOLD) next();
-  //     else if (e.deltaY < -WHEEL_THRESHOLD) prev();
-  //   },
-  //   { passive: false },
-  // );
-
-  // // Touch swipe
-  // let touchStartY = null;
-  // window.addEventListener(
-  //   'touchstart',
-  //   (e) => {
-  //     if (viewerOpen) return;
-  //     touchStartY = e.touches[0].clientY;
-  //   },
-  //   { passive: true },
-  // );
-
-  // window.addEventListener(
-  //   'touchend',
-  //   (e) => {
-  //     if (viewerOpen || touchStartY === null) return;
-  //     const delta = touchStartY - e.changedTouches[0].clientY;
-  //     if (Math.abs(delta) > 50) {
-  //       delta > 0 ? next() : prev();
-  //     }
-  //     touchStartY = null;
-  //   },
-  //   { passive: true },
-  // );
-
-  // // Keyboard
-  // window.addEventListener('keydown', (e) => {
-  //   if (viewerOpen) {
-  //     if (e.key === 'Escape') closeViewer();
-  //     return;
-  //   }
-  //   if (['ArrowDown', 'PageDown'].includes(e.key)) {
-  //     e.preventDefault();
-  //     next();
-  //   } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
-  //     e.preventDefault();
-  //     prev();
-  //   }
-  // });
-
   const track = document.getElementById('scroll-track');
   const panels = document.querySelectorAll('.panel');
   const railDots = document.querySelectorAll('.rail__dot');
@@ -439,8 +378,15 @@
   function openCloudsAndGo() {
     isAnimating = true;
 
-    document.querySelector('.rail').classList.add('is-visible');
+    // First user interaction: initialize and play music if enabled
+    window.initMusic();
+    if (musicEnabled) {
+      window.playMusic();
+    }
 
+    document.querySelector('.rail').classList.add('is-visible');
+    document.querySelector('.lang-toggle').classList.add('is-visible');
+    document.querySelector('.sound-toggle').classList.add('is-visible');
     gsap.to('.hero-clouds--left', { xPercent: -100, ease: 'power2.in', duration: 1.2 });
     gsap.to('.hero-clouds--right', { xPercent: 100, ease: 'power2.in', duration: 1.2 });
     gsap.to('.hero-title-wrap', { opacity: 0, yPercent: -20, ease: 'power1.in', duration: 1 });
@@ -458,6 +404,8 @@
 
   function closeClouds() {
     document.querySelector('.rail').classList.remove('is-visible');
+    document.querySelector('.lang-toggle').classList.remove('is-visible');
+    document.querySelector('.sound-toggle').classList.remove('is-visible');
     gsap.to('.hero-clouds--left', { xPercent: 0, ease: 'power2.out', duration: 1.2 });
     gsap.to('.hero-clouds--right', { xPercent: 0, ease: 'power2.out', duration: 1.2 });
     gsap.to('.hero-title-wrap', { opacity: 1, yPercent: 0, ease: 'power1.out', duration: 1.2 });
@@ -471,22 +419,19 @@
     });
   }
 
-  function next() {
-    if (currentIndex === 0 && !cloudsOpened) {
-      openCloudsAndGo();
-    } else {
-      goTo(currentIndex + 1);
-    }
-  }
+  window.next = function () {
+    if (currentIndex === 0 && !cloudsOpened) openCloudsAndGo();
+    else goTo(currentIndex + 1);
+  };
 
-  function prev() {
+  window.prev = function () {
     if (currentIndex === 1 && cloudsOpened) {
       goTo(0);
       setTimeout(closeClouds, ANIMATION_MS);
     } else {
       goTo(currentIndex - 1);
     }
-  }
+  };
 
   window.addEventListener(
     'wheel',
@@ -494,13 +439,12 @@
       if (viewerOpen) return;
       e.preventDefault();
       if (isAnimating) return;
-      if (e.deltaY > WHEEL_THRESHOLD) next();
-      else if (e.deltaY < -WHEEL_THRESHOLD) prev();
+      if (e.deltaY > WHEEL_THRESHOLD) window.next();
+      else if (e.deltaY < -WHEEL_THRESHOLD) window.prev();
     },
     { passive: false },
   );
 
-  // Touch swipe
   let touchStartY = null;
   window.addEventListener(
     'touchstart',
@@ -517,14 +461,13 @@
       if (viewerOpen || touchStartY === null) return;
       const delta = touchStartY - e.changedTouches[0].clientY;
       if (Math.abs(delta) > 50) {
-        delta > 0 ? next() : prev();
+        delta > 0 ? window.next() : window.prev();
       }
       touchStartY = null;
     },
     { passive: true },
   );
 
-  // Keyboard
   window.addEventListener('keydown', (e) => {
     if (viewerOpen) {
       if (e.key === 'Escape') closeViewer();
@@ -532,54 +475,44 @@
     }
     if (['ArrowDown', 'PageDown'].includes(e.key)) {
       e.preventDefault();
-      next();
+      window.next();
     } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
       e.preventDefault();
-      prev();
+      window.prev();
     }
   });
 
-  // Rail dots + any element with data-jump="<index>"
   railDots.forEach((dot) => {
     dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index, 10)));
-  });
-  document.querySelectorAll('[data-jump]').forEach((el) => {
-    el.addEventListener('click', () => goTo(parseInt(el.dataset.jump, 10)));
   });
 
   /* ------------------------------------------------------------------------
      3c. AMBIENT EMBERS
   ------------------------------------------------------------------------ */
   const embersContainer = document.getElementById('embers');
-  const EMBER_COUNT = 42;
-
-  for (let i = 0; i < EMBER_COUNT; i++) {
+  for (let i = 0; i < 42; i++) {
     const ember = document.createElement('span');
     ember.className = 'ember-particle';
-    const left = Math.random() * 100;
-    const drift = (Math.random() * 60 - 30).toFixed(0) + 'px';
-    const duration = (6 + Math.random() * 8).toFixed(1) + 's';
-    const delay = (Math.random() * 10).toFixed(1) + 's';
-    ember.style.left = `${left}%`;
-    ember.style.setProperty('--drift', drift);
-    ember.style.animationDuration = duration;
-    ember.style.animationDelay = delay;
+    ember.style.left = `${Math.random() * 100}%`;
+    ember.style.setProperty('--drift', (Math.random() * 60 - 30).toFixed(0) + 'px');
+    ember.style.animationDuration = (6 + Math.random() * 8).toFixed(1) + 's';
+    ember.style.animationDelay = (Math.random() * 10).toFixed(1) + 's';
     embersContainer.appendChild(ember);
   }
 
   /* ------------------------------------------------------------------------
-     4. DANTE'S DESCENT PRELOADER (LOOPING LOGIC)
+     4. INIT & PRELOADER
   ------------------------------------------------------------------------ */
-  const hellStages = [
-    { stage: 'STAGE 1', title: 'CIRCLE I — LIMBO' },
-    { stage: 'STAGE 2', title: 'CIRCLE II — LUST' },
-    { stage: 'STAGE 3', title: 'CIRCLE III — GLUTTONY' },
-    { stage: 'STAGE 4', title: 'CIRCLE IV — GREED' },
-    { stage: 'STAGE 5', title: 'CIRCLE V — WRATH' },
-    { stage: 'STAGE 6', title: 'CIRCLE VI — HERESY' },
-    { stage: 'STAGE 7', title: 'CIRCLE VII — VIOLENCE' },
-    { stage: 'STAGE 8', title: 'CIRCLE VIII — FRAUD' },
-    { stage: 'STAGE 9', title: 'CIRCLE IX — TREACHERY' },
+  const hellStagesKeys = [
+    { titleKey: 'loader.circle1' },
+    { titleKey: 'loader.circle2' },
+    { titleKey: 'loader.circle3' },
+    { titleKey: 'loader.circle4' },
+    { titleKey: 'loader.circle5' },
+    { titleKey: 'loader.circle6' },
+    { titleKey: 'loader.circle7' },
+    { titleKey: 'loader.circle8' },
+    { titleKey: 'loader.circle9' },
   ];
 
   const loaderTextStage = document.getElementById('loader-stage');
@@ -591,55 +524,51 @@
 
   window.addEventListener('load', () => {
     pageLoaded = true;
-
     RINGS.forEach((ring) => {
       if (ring.media && !isVideo(ring.media)) {
-        const preloadImg = new Image();
-        preloadImg.src = ring.media;
+        new Image().src = ring.media;
       }
     });
   });
 
-  if (loader && loaderTextStage && loaderTextTitle) {
-    function applyStage(index) {
-      loaderTextStage.classList.add('fade');
-      loaderTextTitle.classList.add('fade');
+  (async () => {
+    await initTranslations();
 
-      setTimeout(() => {
-        loaderTextStage.textContent = hellStages[index].stage;
-        loaderTextTitle.textContent = hellStages[index].title;
-        loaderTextStage.classList.remove('fade');
-        loaderTextTitle.classList.remove('fade');
+    if (loader && loaderTextStage && loaderTextTitle) {
+      function applyStage(index) {
+        loaderTextStage.classList.add('fade');
+        loaderTextTitle.classList.add('fade');
+        setTimeout(() => {
+          loaderTextStage.textContent = window.t('loader.stage', { num: index + 1 });
+          loaderTextTitle.textContent = window.t(hellStagesKeys[index].titleKey);
+          loaderTextStage.classList.remove('fade');
+          loaderTextTitle.classList.remove('fade');
 
-        const circleEl = document.querySelector(`.circle-${index + 1}`);
-        if (circleEl) circleEl.classList.add('is-active');
-      }, 400);
-    }
-
-    loaderTextStage.textContent = hellStages[0].stage;
-    loaderTextTitle.textContent = hellStages[0].title;
-    document.querySelector('.circle-1').classList.add('is-active');
-
-    const descentInterval = setInterval(() => {
-      currentStage++;
-
-      if (currentStage < hellStages.length) {
-        applyStage(currentStage);
-      } else {
-        if (pageLoaded) {
-          clearInterval(descentInterval);
-          setTimeout(() => {
-            loader.classList.add('is-hidden');
-            loader.addEventListener('transitionend', () => loader.remove(), { once: true });
-          }, 900);
-        } else {
-          currentStage = 0;
-
-          document.querySelectorAll('.circle').forEach((c) => c.classList.remove('is-active'));
-
-          applyStage(0);
-        }
+          const circleEl = document.querySelector(`.circle-${index + 1}`);
+          if (circleEl) circleEl.classList.add('is-active');
+        }, 400);
       }
-    }, 900);
-  }
+
+      applyStage(0);
+
+      const descentInterval = setInterval(() => {
+        currentStage++;
+        if (currentStage < hellStagesKeys.length) {
+          applyStage(currentStage);
+        } else {
+          if (pageLoaded) {
+            clearInterval(descentInterval);
+            setTimeout(() => {
+              loader.classList.add('is-hidden');
+              loader.addEventListener('transitionend', () => loader.remove(), { once: true });
+            }, 900);
+          } else {
+            currentStage = 0;
+            document.querySelectorAll('.circle').forEach((c) => c.classList.remove('is-active'));
+            applyStage(0);
+          }
+        }
+      }, 900);
+    }
+  })();
 })();

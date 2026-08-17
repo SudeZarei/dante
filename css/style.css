@@ -1392,3 +1392,171 @@ button {
     transform: scale(0.9);
   }
 }
+
+/* ============================================================
+   LANGUAGE TOGGLE & TRANSITIONS
+   ============================================================ */
+
+/* The fixed cinematic toggle button */
+.lang-toggle {
+  position: fixed;
+  top: 28px;
+  left: 28px;
+  z-index: 10000;
+  background: rgba(11, 9, 8, 0.45);
+  border: 1px solid rgba(233, 225, 209, 0.15);
+  color: var(--bone-dim);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
+.lang-toggle:hover,
+.lang-toggle:focus-visible {
+  border-color: var(--ember);
+  color: var(--bone);
+  outline: none;
+}
+
+.lang-toggle__en,
+.lang-toggle__fa {
+  transition: color 0.3s ease;
+}
+
+/* Highlight active language */
+html[lang='en'] .lang-toggle__en,
+html[lang='fa'] .lang-toggle__fa {
+  color: var(--ember-glow);
+  font-weight: 500;
+}
+
+/* Text transitions for language switching */
+.is-switching-lang [data-i18n],
+.is-switching-lang [data-i18n-aria],
+.is-switching-lang .viewer__panel,
+.is-switching-lang .loader-text-wrap {
+  opacity: 0 !important;
+  filter: blur(4px);
+  transform: translateY(2px);
+}
+
+[data-i18n],
+[data-i18n-aria],
+.viewer__panel,
+.loader-text-wrap {
+  transition:
+    opacity 0.3s ease,
+    filter 0.3s ease,
+    transform 0.3s ease;
+}
+
+.lang-toggle.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ============================================================
+   PERSIAN (RTL) SPECIFIC OVERRIDES
+   ============================================================ */
+html[lang='fa'] {
+  --font-display: 'Amiri', serif;
+  --font-body: 'Amiri', serif;
+  --font-mono: 'Vazirmatn', sans-serif;
+}
+
+/* 
+  Persian and Arabic connected script handles wide letter-spacing poorly. 
+  We must disable standard english tracking for clean font rendering. 
+*/
+html[lang='fa'] .hero-title,
+html[lang='fa'] .hero-desc,
+html[lang='fa'] .eyebrow,
+html[lang='fa'] .loader-stage,
+html[lang='fa'] .loader-title,
+html[lang='fa'] .scroll-hint,
+html[lang='fa'] .viewer__eyebrow,
+html[lang='fa'] .viewer__title,
+html[lang='fa'] .viewer__desc,
+html[lang='fa'] .credits-title,
+html[lang='fa'] .credits-list li span,
+html[lang='fa'] .lang-toggle {
+  letter-spacing: normal !important;
+}
+
+/* Ensure proper composition and alignment on lists and viewers */
+html[lang='fa'] .credits-list {
+  text-align: right;
+  direction: rtl;
+}
+
+html[lang='fa'] .viewer__panel {
+  text-align: right;
+  direction: rtl;
+}
+
+/* Keep the interactive rail on the physical right to match map bounds */
+html[lang='fa'] .rail {
+  right: 28px;
+  left: auto;
+}
+
+/* Realign credits list labels */
+html[lang='fa'] .credits-list li {
+  justify-content: space-between;
+}
+
+/* ============================================================
+   AMBIENT MUSIC TOGGLE UI
+   ============================================================ */
+
+/* Elegant cinematic button fixed to the bottom left */
+.sound-toggle {
+  position: fixed;
+  top: 60px;
+  left: 28px;
+  z-index: 10000;
+  background: rgba(11, 9, 8, 0.45);
+  border: 1px solid rgba(233, 225, 209, 0.15);
+  color: var(--bone-dim);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.8s ease;
+}
+
+.sound-toggle:hover,
+.sound-toggle:focus-visible {
+  border-color: var(--ember);
+  color: var(--bone);
+  outline: none;
+}
+
+.sound-toggle.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
