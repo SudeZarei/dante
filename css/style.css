@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Kahroba';
+  src: url('../assets/fonts/Kahroba-T-SC.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* ============================================================
    TOKENS
    ============================================================ */
@@ -1475,6 +1483,12 @@ html[lang='fa'] {
   --font-display: 'Amiri', serif;
   --font-body: 'Amiri', serif;
   --font-mono: 'Vazirmatn', sans-serif;
+}
+
+html[lang='fa'] .viewer__title {
+  font-family: 'Kahroba', sans-serif;
+  direction: rtl;
+  text-align: right;
 }
 
 /* 
